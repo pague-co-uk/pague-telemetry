@@ -1,46 +1,37 @@
-import pino, { Logger, LoggerOptions } from 'pino';
-import { context, trace } from '@opentelemetry/api';
+import pino, { Logger, LoggerOptions, multistream } from 'pino';
+
+import { getTraceContext } from './context';
+import { redaction } from './redaction';
+import { serializers } from './serializers';
+import { createTransports, TransportConfig } from './transports';
 
 export interface LoggerConfig {
   serviceName: string;
   serviceVersion?: string;
   level?: string;
+  transport?: TransportConfig;
 }
 
 let logger: Logger | undefined;
-
-function getTraceContext(): Record<string, string> {
-  const span = trace.getSpan(context.active());
-
-  if (!span) {
-    return {};
-  }
-
-  const { traceId, spanId } = span.spanContext();
-
-  return {
-    traceId,
-    spanId,
-  };
-}
 
 export function initLogger(config: LoggerConfig): Logger {
   if (logger) {
     return logger;
   }
 
-  const base: Record<string, unknown> = {
-    serviceName: config.serviceName,
-  };
-
-  if (config.serviceVersion) {
-    base.serviceVersion = config.serviceVersion;
-  }
-
   const options: LoggerOptions = {
     level: config.level ?? process.env.LOG_LEVEL ?? 'info',
 
-    base,
+    base: {
+      serviceName: config.serviceName,
+      ...(config.serviceVersion && {
+        serviceVersion: config.serviceVersion,
+      }),
+    },
+
+    serializers,
+
+    redact: redaction,
 
     timestamp: pino.stdTimeFunctions.isoTime,
 
@@ -49,7 +40,10 @@ export function initLogger(config: LoggerConfig): Logger {
     },
   };
 
-  logger = pino(options);
+  logger = pino(
+    options,
+    multistream(createTransports(config.transport)),
+  );
 
   return logger;
 }

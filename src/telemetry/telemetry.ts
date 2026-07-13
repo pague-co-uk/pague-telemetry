@@ -8,7 +8,7 @@ import { telemetryManager } from './manager';
 import { createResource } from './resources';
 import { createInstrumentations } from './instrumentations';
 import { registerShutdownHooks } from './shutdown';
-import { initLogger } from '../logger';
+import { initLogger } from '../logger/logger';
 
 export function initTelemetry(config: TelemetryConfig): void {
   const sdk = new NodeSDK({

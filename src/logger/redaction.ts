@@ -1,0 +1,47 @@
+import type { LoggerOptions } from 'pino';
+
+export const redaction: NonNullable<LoggerOptions['redact']> = {
+  paths: [
+    '*.password',
+    '*.passwordHash',
+    '*.newPassword',
+    '*.oldPassword',
+
+    '*.accessToken',
+    '*.refreshToken',
+    '*.idToken',
+    '*.token',
+
+    '*.authorization',
+    '*.Authorization',
+
+    '*.apiKey',
+    '*.api_key',
+
+    '*.secret',
+    '*.clientSecret',
+    '*.client_secret',
+
+    '*.otp',
+    '*.pin',
+
+    '*.cvv',
+    '*.cardNumber',
+
+    '*.privateKey',
+    '*.certificate',
+
+    'req.headers.authorization',
+    'req.headers.cookie',
+    'req.headers["set-cookie"]',
+
+    'req.body.password',
+    'req.body.newPassword',
+    'req.body.oldPassword',
+    'req.body.accessToken',
+    'req.body.refreshToken',
+    'req.body.apiKey',
+    'req.body.secret',
+  ],
+  censor: '[REDACTED]',
+};
