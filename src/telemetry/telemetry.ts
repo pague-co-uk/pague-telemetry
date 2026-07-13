@@ -6,8 +6,9 @@ import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import type { TelemetryConfig } from '../types';
 import { telemetryManager } from './manager';
 import { createResource } from './resources';
-import {createInstrumentations} from './instrumentation';
+import { createInstrumentations } from './instrumentations';
 import { registerShutdownHooks } from './shutdown';
+import { initLogger } from '../logger';
 
 export function initTelemetry(config: TelemetryConfig): void {
   const sdk = new NodeSDK({
@@ -28,6 +29,11 @@ export function initTelemetry(config: TelemetryConfig): void {
   });
 
   sdk.start();
+
+  initLogger({
+    serviceName: config.service.name,
+    serviceVersion: config.service.version,
+  });
 
   telemetryManager.initialize(sdk);
   registerShutdownHooks();

@@ -2,10 +2,12 @@ import pino, { Logger, LoggerOptions } from 'pino';
 import { context, trace } from '@opentelemetry/api';
 
 export interface LoggerConfig {
-  serviceName?: string;
+  serviceName: string;
   serviceVersion?: string;
   level?: string;
 }
+
+let logger: Logger | undefined;
 
 function getTraceContext(): Record<string, string> {
   const span = trace.getSpan(context.active());
@@ -22,12 +24,13 @@ function getTraceContext(): Record<string, string> {
   };
 }
 
-export function createLogger(config: LoggerConfig = {}): Logger {
+export function initLogger(config: LoggerConfig): Logger {
+  if (logger) {
+    return logger;
+  }
+
   const base: Record<string, unknown> = {
-    serviceName:
-      config.serviceName ??
-      process.env.OTEL_SERVICE_NAME ??
-      'unknown-service',
+    serviceName: config.serviceName,
   };
 
   if (config.serviceVersion) {
@@ -46,5 +49,17 @@ export function createLogger(config: LoggerConfig = {}): Logger {
     },
   };
 
-  return pino(options);
+  logger = pino(options);
+
+  return logger;
+}
+
+export function getLogger(): Logger {
+  if (!logger) {
+    throw new Error(
+      'Logger has not been initialized. Call initTelemetry() before using getLogger().',
+    );
+  }
+
+  return logger;
 }
