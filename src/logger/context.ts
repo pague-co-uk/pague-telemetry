@@ -20,7 +20,6 @@ export function getTraceContext(): TraceContext {
   return {
     traceId: spanContext.traceId,
     spanId: spanContext.spanId,
-    traceFlags: spanContext.traceFlags,
   };
 }
 

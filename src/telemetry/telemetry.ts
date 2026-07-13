@@ -8,7 +8,9 @@ import { telemetryManager } from './manager';
 import { createResource } from './resources';
 import { createInstrumentations } from './instrumentations';
 import { registerShutdownHooks } from './shutdown';
-import { initLogger } from '../logger/logger';
+
+import { initLogger } from '../logger';
+import { initMeter } from '../metrics';
 
 export function initTelemetry(config: TelemetryConfig): void {
   const sdk = new NodeSDK({
@@ -33,6 +35,11 @@ export function initTelemetry(config: TelemetryConfig): void {
   initLogger({
     serviceName: config.service.name,
     serviceVersion: config.service.version,
+  });
+
+  initMeter({
+    serviceName: config.service.name,
+    version: config.service.version,
   });
 
   telemetryManager.initialize(sdk);
