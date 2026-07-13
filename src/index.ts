@@ -2,4 +2,5 @@ export * from './types';
 export * from './errors';
 
 export * from './telemetry';
-export * from './logger/logger';
+export * from './logger';
+export * from './metrics';
