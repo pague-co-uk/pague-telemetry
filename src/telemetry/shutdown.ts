@@ -1,0 +1,24 @@
+import { telemetryManager } from './manager';
+
+let registered = false;
+
+export function registerShutdownHooks(): void {
+  if (registered) {
+    return;
+  }
+
+  registered = true;
+
+  const shutdown = async () => {
+    try {
+      await telemetryManager.shutdown();
+    } catch (error) {
+      console.error('Failed to shut down OpenTelemetry.', error);
+    } finally {
+      process.exit(0);
+    }
+  };
+
+  process.once('SIGINT', shutdown);
+  process.once('SIGTERM', shutdown);
+}

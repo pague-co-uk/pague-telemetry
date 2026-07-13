@@ -1,0 +1,13 @@
+export class TelemetryAlreadyInitializedError extends Error {
+  constructor() {
+    super("Telemetry has already been initialized.");
+  }
+}
+
+export class TelemetryNotInitializedError extends Error {
+  constructor() {
+    super(
+      "Telemetry has not been initialized. Call initTelemetry() first.",
+    );
+  }
+}
