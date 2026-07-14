@@ -1,11 +1,18 @@
 import pino, { Logger, LoggerOptions, multistream } from 'pino';
 
+import { DEFAULT_LOG_LEVEL, LOG_FIELDS } from '../common/constants';
+import { getLogLevel } from '../common/env';
+import { NotInitializedError } from '../common/errors';
+
 import { getTraceContext } from './context';
 import { redaction } from './redaction';
 import { serializers } from './serializers';
-import { createTransports, TransportConfig } from './transports';
+import {
+  createTransports,
+  TransportConfig,
+} from './transports';
 
-export interface LoggerConfig {
+export interface InternalLoggerConfig {
   serviceName: string;
   serviceVersion?: string;
   level?: string;
@@ -14,18 +21,22 @@ export interface LoggerConfig {
 
 let logger: Logger | undefined;
 
-export function initLogger(config: LoggerConfig): Logger {
+export function initLogger(
+  config: InternalLoggerConfig,
+): Logger {
   if (logger) {
     return logger;
   }
 
   const options: LoggerOptions = {
-    level: config.level ?? process.env.LOG_LEVEL ?? 'info',
+    level: config.level ?? getLogLevel() ?? DEFAULT_LOG_LEVEL,
 
     base: {
-      serviceName: config.serviceName,
+      [LOG_FIELDS.SERVICE]: config.serviceName,
+
       ...(config.serviceVersion && {
-        serviceVersion: config.serviceVersion,
+        [LOG_FIELDS.VERSION]:
+          config.serviceVersion,
       }),
     },
 
@@ -42,7 +53,9 @@ export function initLogger(config: LoggerConfig): Logger {
 
   logger = pino(
     options,
-    multistream(createTransports(config.transport)),
+    multistream(
+      createTransports(config.transport),
+    ),
   );
 
   return logger;
@@ -50,9 +63,7 @@ export function initLogger(config: LoggerConfig): Logger {
 
 export function getLogger(): Logger {
   if (!logger) {
-    throw new Error(
-      'Logger has not been initialized. Call initTelemetry() before using getLogger().',
-    );
+    throw new NotInitializedError('Logger');
   }
 
   return logger;

@@ -1,0 +1,418 @@
+# @pague-co-uk/sms-gateway-telemetry
+
+> A production-ready observability SDK for the Pague SMS Gateway platform.
+
+`@pague-co-uk/sms-gateway-telemetry` provides a unified interface for **distributed tracing, structured logging, metrics, and request context propagation** across all Pague services.
+
+Built on top of OpenTelemetry, it removes most of the boilerplate normally required to instrument distributed applications while providing a consistent developer experience across APIs, workers, RabbitMQ consumers, SMPP servers, and scheduled jobs.
+
+# Design Principles
+
+The SDK is built around a small set of principles that guide every feature and architectural decision.
+
+## Framework Agnostic
+
+The core SDK must not depend on any application framework. Whether a service is built with NestJS, Express, Fastify, or runs as a background worker, the same telemetry APIs should be available.
+
+Framework-specific integrations are implemented as adapters on top of the core SDK.
+
+---
+
+## OpenTelemetry First
+
+OpenTelemetry is the underlying observability engine.
+
+The SDK does not replace OpenTelemetry—it provides a simpler, opinionated developer experience while remaining fully compatible with the OpenTelemetry ecosystem.
+
+---
+
+## Convention over Configuration
+
+Applications should require as little configuration as possible.
+
+Common functionality such as:
+
+- Trace correlation
+- Context propagation
+- Structured logging
+- Metric enrichment
+
+should happen automatically.
+
+---
+
+## Strongly Typed
+
+The SDK should expose strongly typed APIs wherever possible.
+
+Consumers should benefit from:
+
+- IntelliSense
+- Compile-time validation
+- Discoverable APIs
+- Minimal stringly-typed configuration
+
+---
+
+## Production Ready Defaults
+
+The default configuration should be suitable for production deployments.
+
+Examples include:
+
+- JSON logging
+- Structured metrics
+- Automatic instrumentation
+- Safe error handling
+- Graceful shutdown
+
+Applications should work well without requiring extensive configuration.
+
+---
+
+## Framework Consistency
+
+The same concepts should exist regardless of the application type.
+
+For example:
+
+```ts
+getLogger()
+
+withSpan()
+
+createCounterMetric()
+
+updateContext()
+```
+
+should behave consistently whether running inside:
+
+- NestJS
+- Express
+- Workers
+- RabbitMQ consumers
+- SMPP servers
+
+---
+
+## Automatic Context Propagation
+
+Request context should flow automatically throughout the application.
+
+Once context is established, it should be available to:
+
+- Logging
+- Metrics
+- Tracing
+
+without requiring developers to pass it explicitly through every method.
+
+---
+
+## Opinionated APIs
+
+The SDK intentionally wraps OpenTelemetry instead of exposing it directly.
+
+For example:
+
+```ts
+requests.increment();
+```
+
+is preferred over
+
+```ts
+counter.add(1);
+```
+
+This allows the SDK to evolve internally without forcing changes on consuming applications.
+
+---
+
+## Modular Architecture
+
+The SDK is organized into independent modules.
+
+```
+telemetry/
+
+logger/
+
+metrics/
+
+tracing/
+
+context/
+
+common/
+```
+
+Each module has a single responsibility and can evolve independently while presenting a unified public API.
+
+---
+
+## Stability
+
+The public SDK API should remain stable.
+
+Internal implementation details may change over time, but consuming applications should require minimal changes when upgrading SDK versions.
+
+---
+
+# Features
+
+## Telemetry
+
+- OpenTelemetry SDK bootstrap
+- Automatic resource configuration
+- Automatic instrumentation
+- Graceful shutdown
+- OTLP Trace Export
+- OTLP Metric Export
+
+---
+
+## Structured Logging
+
+- JSON logging
+- Trace correlation
+- Context correlation
+- Child loggers
+- Multiple transports
+- Sensitive field redaction
+- Error serialization
+
+---
+
+## Metrics
+
+- Counter metrics
+- Histogram metrics
+- Observable gauges
+- Common metric attributes
+- Metric registry
+- Type-safe wrappers
+
+---
+
+## Tracing
+
+- Tracer management
+- Span helpers
+- Active span helpers
+- Exception recording
+- Attribute helpers
+- Async span helpers
+
+---
+
+## Context Propagation
+
+- AsyncLocalStorage
+- Request context
+- Correlation IDs
+- Automatic log enrichment
+- Automatic span enrichment
+
+---
+
+# Current Architecture
+
+```
+Application
+        │
+        ▼
+──────────────────────────────────
+Pague Telemetry SDK
+──────────────────────────────────
+
+Telemetry Lifecycle
+
+Logger
+
+Metrics
+
+Tracing
+
+Context
+
+──────────────────────────────────
+        │
+        ▼
+OpenTelemetry SDK
+        │
+        ▼
+OpenTelemetry Collector
+        │
+        ├────────► Tempo
+        │
+        ├────────► Prometheus
+        │
+        └────────► Loki
+```
+
+---
+
+# Installation
+
+```bash
+npm install @pague-co-uk/sms-gateway-telemetry
+```
+
+---
+
+# Quick Start
+
+```ts
+import { initTelemetry } from '@pague-co-uk/sms-gateway-telemetry';
+
+initTelemetry({
+  service: {
+    name: 'control-plane-api',
+    version: '1.0.0',
+  },
+
+  collector: {
+    tracesEndpoint: 'http://localhost:4318/v1/traces',
+    metricsEndpoint: 'http://localhost:4318/v1/metrics',
+  },
+
+  metrics: {
+    exportIntervalMillis: 10000,
+  },
+});
+```
+
+---
+
+# Logging
+
+```ts
+import { getLogger } from '@pague-co-uk/sms-gateway-telemetry';
+
+const logger = getLogger();
+
+logger.info('Application started');
+```
+
+Example output
+
+```json
+{
+  "service":"control-plane-api",
+  "version":"1.0.0",
+  "traceId":"...",
+  "spanId":"...",
+  "msg":"Application started"
+}
+```
+
+---
+
+# Metrics
+
+```ts
+import {
+  createCounterMetric,
+} from '@pague-co-uk/sms-gateway-telemetry';
+
+const requests = createCounterMetric({
+  name: 'app.requests.total',
+  description: 'Total requests',
+});
+
+requests.increment();
+```
+
+---
+
+# Tracing
+
+```ts
+import {
+  withSpan,
+} from '@pague-co-uk/sms-gateway-telemetry';
+
+await withSpan(
+  'Process SMS',
+  async (span) => {
+
+    span.setAttribute('sms.id', sms.id);
+
+    // business logic
+
+  },
+);
+```
+
+---
+
+# Context
+
+```ts
+import {
+  updateContext,
+} from '@pague-co-uk/sms-gateway-telemetry';
+
+updateContext({
+  requestId: '123',
+  tenantId: 'tenant-a',
+  clientId: 'client-a',
+});
+```
+
+Every subsequent log entry and active span is automatically enriched with the current request context.
+
+---
+
+# Roadmap
+
+## Completed
+
+- Telemetry bootstrap
+- Structured logging
+- Metrics
+- Tracing helpers
+- Async context propagation
+- Configuration validation
+- Multi-transport logging
+
+## In Progress
+
+- Documentation
+- SDK hardening
+
+## Planned
+
+- HTTP middleware
+- NestJS integration
+- RabbitMQ integration
+- SMPP integration
+- SMS Gateway domain metrics
+- Health endpoints
+- OTLP Log Export
+- Performance benchmarking
+
+---
+
+# Documentation
+
+Detailed documentation is available in the `/docs` directory.
+
+- Getting Started
+- Configuration
+- Architecture
+- Logging
+- Metrics
+- Tracing
+- Context
+- API Reference
+- Framework Guides
+- Troubleshooting
+
+---
+
+# License
+
+ISC

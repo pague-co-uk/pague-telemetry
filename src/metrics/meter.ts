@@ -1,4 +1,6 @@
-import { metrics, Meter } from '@opentelemetry/api';
+import { Meter, metrics } from '@opentelemetry/api';
+
+import { NotInitializedError } from '../common/errors';
 
 let meter: Meter | undefined;
 
@@ -22,9 +24,7 @@ export function initMeter(config: MeterConfig): Meter {
 
 export function getMeter(): Meter {
   if (!meter) {
-    throw new Error(
-      'Meter has not been initialized. Call initTelemetry() before using metrics.',
-    );
+    throw new NotInitializedError('Meter');
   }
 
   return meter;

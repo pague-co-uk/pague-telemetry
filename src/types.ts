@@ -1,3 +1,5 @@
+import type { TransportConfig } from './logger';
+
 export interface ServiceConfig {
   /**
    * Logical service name.
@@ -42,6 +44,21 @@ export interface MetricsConfig {
   exportIntervalMillis: number;
 }
 
+export interface LoggerConfig {
+  /**
+   * Minimum log level.
+   *
+   * Examples:
+   * trace, debug, info, warn, error, fatal
+   */
+  level?: string;
+
+  /**
+   * Logger transport configuration.
+   */
+  transport?: TransportConfig;
+}
+
 export interface InstrumentationConfig {
   /**
    * Disable filesystem instrumentation.
@@ -58,6 +75,8 @@ export interface TelemetryConfig {
   collector: CollectorConfig;
 
   metrics: MetricsConfig;
+
+  logger?: LoggerConfig;
 
   instrumentations?: InstrumentationConfig;
 }

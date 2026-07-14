@@ -1,0 +1,17 @@
+export interface RequestContext {
+  requestId?: string;
+
+  correlationId?: string;
+
+  tenantId?: string;
+
+  clientId?: string;
+
+  userId?: string;
+
+  sessionId?: string;
+
+  operation?: string;
+
+  [key: string]: string | number | boolean | undefined;
+}

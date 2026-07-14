@@ -3,7 +3,15 @@ import path from 'node:path';
 
 import { SonicBoom } from 'sonic-boom';
 
-export type TransportDestination = 'stdout' | 'file';
+import {
+  DEFAULT_LOG_FILE_ENABLED,
+  DEFAULT_LOG_FILE_PATH,
+  DEFAULT_LOG_STDOUT_ENABLED,
+} from '../common/constants';
+import {
+  getBooleanEnv,
+  getEnv,
+} from '../common/env';
 
 export interface FileTransportConfig {
   enabled: boolean;
@@ -16,7 +24,9 @@ export interface TransportConfig {
 }
 
 function ensureDirectory(filePath: string): void {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.mkdirSync(path.dirname(filePath), {
+    recursive: true,
+  });
 }
 
 function createStdoutTransport(): SonicBoom {
@@ -26,7 +36,9 @@ function createStdoutTransport(): SonicBoom {
   });
 }
 
-function createFileTransport(filePath: string): SonicBoom {
+function createFileTransport(
+  filePath: string,
+): SonicBoom {
   ensureDirectory(filePath);
 
   return new SonicBoom({
@@ -44,7 +56,10 @@ export function createTransports(
 
   const stdoutEnabled =
     config.stdout ??
-    process.env.LOG_STDOUT !== 'false';
+    getBooleanEnv(
+      'LOG_STDOUT',
+      DEFAULT_LOG_STDOUT_ENABLED,
+    );
 
   if (stdoutEnabled) {
     transports.push(createStdoutTransport());
@@ -52,15 +67,22 @@ export function createTransports(
 
   const fileEnabled =
     config.file?.enabled ??
-    process.env.LOG_FILE_ENABLED === 'true';
+    getBooleanEnv(
+      'LOG_FILE_ENABLED',
+      DEFAULT_LOG_FILE_ENABLED,
+    );
 
   if (fileEnabled) {
     const filePath =
       config.file?.path ??
-      process.env.LOG_FILE_PATH ??
-      './logs/application.log';
+      getEnv(
+        'LOG_FILE_PATH',
+        DEFAULT_LOG_FILE_PATH,
+      )!;
 
-    transports.push(createFileTransport(filePath));
+    transports.push(
+      createFileTransport(filePath),
+    );
   }
 
   return transports;

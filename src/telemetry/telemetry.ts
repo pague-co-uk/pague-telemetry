@@ -4,15 +4,21 @@ import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 
 import type { TelemetryConfig } from '../types';
+
+import { getEnvironment } from '../common/env';
+import { initLogger } from '../logger';
+import { initMeter, setCommonMetricAttributes } from '../metrics';
+import { initTracer } from '../tracing';
+
+import { createInstrumentations } from './instrumentations';
 import { telemetryManager } from './manager';
 import { createResource } from './resources';
-import { createInstrumentations } from './instrumentations';
 import { registerShutdownHooks } from './shutdown';
-
-import { initLogger } from '../logger';
-import { initMeter } from '../metrics';
+import { validateTelemetryConfig } from './validation';
 
 export function initTelemetry(config: TelemetryConfig): void {
+  validateTelemetryConfig(config);
+
   const sdk = new NodeSDK({
     resource: createResource(config),
 
@@ -35,6 +41,18 @@ export function initTelemetry(config: TelemetryConfig): void {
   initLogger({
     serviceName: config.service.name,
     serviceVersion: config.service.version,
+
+    ...(config.logger?.level && {
+      level: config.logger.level,
+    }),
+
+    ...(config.logger?.transport && {
+      transport: config.logger.transport,
+    }),
+  });
+  initTracer({
+    serviceName: config.service.name,
+    version: config.service.version,
   });
 
   initMeter({
@@ -42,7 +60,14 @@ export function initTelemetry(config: TelemetryConfig): void {
     version: config.service.version,
   });
 
+  setCommonMetricAttributes({
+    service: config.service.name,
+    version: config.service.version,
+    environment: getEnvironment(),
+  });
+
   telemetryManager.initialize(sdk);
+
   registerShutdownHooks();
 }
 

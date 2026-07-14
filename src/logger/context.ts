@@ -1,28 +1,36 @@
-import { context, trace, SpanContext } from '@opentelemetry/api';
+import { context, trace } from '@opentelemetry/api';
 
-export interface TraceContext {
+import { currentContext } from '../context/context';
+
+export interface LoggerContext {
   traceId?: string;
   spanId?: string;
-  traceFlags?: number;
+  requestId?: string;
+  correlationId?: string;
+  tenantId?: string;
+  clientId?: string;
+  userId?: string;
+  sessionId?: string;
+  operation?: string;
 }
 
-export function getActiveSpanContext(): SpanContext | undefined {
-  return trace.getSpan(context.active())?.spanContext();
-}
+export function getTraceContext(): LoggerContext {
+  const requestContext = currentContext();
 
-export function getTraceContext(): TraceContext {
-  const spanContext = getActiveSpanContext();
+  const span = trace.getSpan(context.active());
 
-  if (!spanContext) {
-    return {};
+  if (!span) {
+    return {
+      ...requestContext,
+    };
   }
+
+  const spanContext = span.spanContext();
 
   return {
     traceId: spanContext.traceId,
     spanId: spanContext.spanId,
-  };
-}
 
-export function hasActiveTrace(): boolean {
-  return getActiveSpanContext() !== undefined;
+    ...requestContext,
+  };
 }
