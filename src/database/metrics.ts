@@ -2,58 +2,61 @@ import {
   createCounterMetric,
   createHistogramMetric,
 } from '../metrics';
+import { createLazyMetricBundle } from '../metrics/lazy';
+import type {
+  CounterMetric,
+  HistogramMetric,
+} from '../metrics';
 
 import {
   DatabaseMetrics,
 } from './constants';
 
-const queryCounter =
-  createCounterMetric({
-    name: DatabaseMetrics.QUERY_COUNT,
-    description:
-      'Total number of executed database queries',
-  });
+interface DatabaseMetricBundle {
+  queryCounter: CounterMetric;
+  failedQueryCounter: CounterMetric;
+  connectionErrorCounter: CounterMetric;
+  queryDurationHistogram: HistogramMetric;
+}
 
-const failedQueryCounter =
-  createCounterMetric({
-    name: DatabaseMetrics.QUERY_FAILED,
-    description:
-      'Total number of failed database queries',
-  });
-
-const connectionErrorCounter =
-  createCounterMetric({
-    name:
-      DatabaseMetrics.CONNECTION_ERRORS,
-    description:
-      'Total number of database connection errors',
-  });
-
-const queryDurationHistogram =
-  createHistogramMetric({
-    name:
-      DatabaseMetrics.QUERY_DURATION,
-    description:
-      'Database query duration',
-    unit: 'ms',
-  });
+const getMetrics = createLazyMetricBundle<DatabaseMetricBundle>(
+  () => ({
+    queryCounter: createCounterMetric({
+      name: DatabaseMetrics.QUERY_COUNT,
+      description: 'Total number of executed database queries',
+    }),
+    failedQueryCounter: createCounterMetric({
+      name: DatabaseMetrics.QUERY_FAILED,
+      description: 'Total number of failed database queries',
+    }),
+    connectionErrorCounter: createCounterMetric({
+      name: DatabaseMetrics.CONNECTION_ERRORS,
+      description: 'Total number of database connection errors',
+    }),
+    queryDurationHistogram: createHistogramMetric({
+      name: DatabaseMetrics.QUERY_DURATION,
+      description: 'Database query duration',
+      unit: 'ms',
+    }),
+  }),
+);
 
 export function recordQuery(): void {
-  queryCounter.increment();
+  getMetrics().queryCounter.increment();
 }
 
 export function recordFailedQuery(): void {
-  failedQueryCounter.increment();
+  getMetrics().failedQueryCounter.increment();
 }
 
 export function recordConnectionError(): void {
-  connectionErrorCounter.increment();
+  getMetrics().connectionErrorCounter.increment();
 }
 
 export function recordQueryDuration(
   durationMs: number,
 ): void {
-  queryDurationHistogram.record(
+  getMetrics().queryDurationHistogram.record(
     durationMs,
   );
 }

@@ -1,6 +1,19 @@
 # API Reference
 
-This reference documents version 1.0 of the public API exposed by `@pague-co-uk/sms-gateway-telemetry`. The package publishes only its root entry point (`@pague-co-uk/sms-gateway-telemetry`); source-level HTTP, RabbitMQ, database, SMPP, tracing, and NestJS modules are not package exports and are deliberately not documented as usable SDK APIs.
+This reference documents the current root entry point of `@pague-co-uk/sms-gateway-telemetry` (package version `1.0.8`). The package publishes one import path, `@pague-co-uk/sms-gateway-telemetry`, and that root barrel exports telemetry, logger, metrics, tracing, context, HTTP, RabbitMQ, database, SMPP, types, errors, and integration constants. Importing the package is side-effect free; `initTelemetry()` is the single telemetry initialization entry point.
+
+## Current Public Export Inventory
+
+The detailed core entries below remain valid. The following inventory supersedes the stale “not exported” statements in previous versions of this document and is generated from the current `src/index.ts` declaration surface.
+
+| Area | Public exports |
+| --- | --- |
+| Context | `withContext`, `withContextAsync`, `currentContext`, `updateContext`, `clearCurrentContext`, `getContextValue`, `setContextValue` |
+| Tracing | `initTracer`, `getTracer`, `startSpan`, `startActiveSpan`, `getActiveSpan`, `finishSpan`, `failSpan`, `endSpan`, `withSpan`, `withSpanSync`, `withSyncSpan`, `withPromiseSpan`, `withObservableSpan`, `traceObservable`, `setAttribute`, `setAttributes`, `setStatus`, `recordException`, `addEvent`, `spanNaming`, `TracerConfig` |
+| HTTP | `REQUEST_ID_HEADER`, `CORRELATION_ID_HEADER`, `TRACE_PARENT_HEADER`, `DEFAULT_REQUEST_COUNTER`, `DEFAULT_REQUEST_DURATION`, `DEFAULT_ACTIVE_REQUESTS`, `DEFAULT_REQUEST_SIZE`, `DEFAULT_RESPONSE_SIZE`, `DEFAULT_HTTP_SPAN_NAME`, `establishRequestContext`, `getHeader`, `setHeader`, `getRequestId`, `setRequestId`, `getCorrelationId`, `setCorrelationId`, `createHttpRequestLifecycle`, `HttpRequestLifecycle`, `getHttpMetrics`, `createHttpMiddleware`, `startHttpSpan`, `finishHttpSpan`, `failHttpSpan`, `logRequestStarted`, `logRequestCompleted`, `logRequestFailed`, `HttpRequest`, `HttpResponse`, `NextFunction`, `HttpMiddleware`, `HttpContextOptions`, `HttpMetricsOptions`, `HttpLoggingOptions`, `HttpTracingOptions`, `HttpOptions` |
+| RabbitMQ | `RabbitMqHeaders`, `RabbitMqMetrics`, `RabbitMqComponent`, `consumeMessages`, `publishMessage`, `injectContext`, `extractContext`, `RabbitMqLifecycle`, `getRabbitMqLifecycle`, `RabbitMqLifecycleContext`, `recordPublish`, `recordConsume`, `recordFailure`, `recordPublishDuration`, `recordConsumeDuration`, `logPublishStarted`, `logPublishCompleted`, `logPublishFailed`, `logConsumeStarted`, `logConsumeCompleted`, `logConsumeFailed`, `ConsumeChannel`, `PublishChannel` |
+| Database | `DatabaseComponent`, `DatabaseMetrics`, `DatabaseAttributes`, `DatabaseLifecycle`, `getDatabaseLifecycle`, `recordQuery`, `recordFailedQuery`, `recordConnectionError`, `recordQueryDuration`, `logQueryStarted`, `logQueryCompleted`, `logQueryFailed`, `logSlowQuery` |
+| SMPP | `SmppComponent`, `SmppMetrics`, `SmppCommands`, `SmppAttributes`, `SmppLifecycle`, `getSmppLifecycle`, `recordBind`, `recordFailedBind`, `recordSubmit`, `recordFailedSubmit`, `recordDeliver`, `recordFailedDeliver`, `recordEnquireLink`, `recordUnbind`, `incrementActiveSessions`, `decrementActiveSessions`, `recordPduDuration`, `logBindStarted`, `logBindCompleted`, `logBindFailed`, `logPduReceived`, `logPduProcessed`, `logPduFailed`, `logSessionConnected`, `logSessionDisconnected` |
 
 # Telemetry
 
@@ -1757,23 +1770,23 @@ Use one factory call per logical metric name. Later calls with the same name ret
 
 # Tracing
 
-No tracing APIs are exported by the published root package. The telemetry bootstrap configures tracing internally.
+Tracing APIs are exported by the root package. See the current public export inventory above; all span helpers require `initTelemetry()` or `initTracer()` before use.
 
 # HTTP
 
-No HTTP APIs are exported by the published root package.
+HTTP lifecycle, middleware, context, logging, tracing, metrics, constants, and request/response types are exported by the root package. See the current public export inventory above. HTTP metrics are created lazily on first use after telemetry initialization.
 
 # RabbitMQ
 
-No RabbitMQ APIs are exported by the published root package.
+RabbitMQ lifecycle, publishing, consuming, context propagation, logging, metrics, constants, and channel types are exported by the root package. RabbitMQ metric instruments are created lazily on their first recording call after telemetry initialization.
 
 # Database
 
-No database APIs are exported by the published root package.
+Database lifecycle, logging, metrics, and constants are exported by the root package. Database metric instruments are created lazily on their first recording call after telemetry initialization.
 
 # SMPP
 
-No SMPP APIs are exported by the published root package.
+SMPP lifecycle, logging, metrics, and constants are exported by the root package. SMPP metric instruments are created lazily on their first recording call after telemetry initialization.
 
 # NestJS
 
@@ -2241,17 +2254,17 @@ Initialize telemetry before accessing telemetry-dependent application code. This
 
 # Constants
 
-No constants are exported by the published root package.
+The root package exports HTTP, RabbitMQ, database, and SMPP constants listed in the current public export inventory above.
 
 # Documentation Review
 
-- Undocumented public exports: none. The generated root declaration exports 42 symbols, and each is documented above.
+- Undocumented public exports: none. The detailed core entries and the current root-barrel inventory together cover all 166 symbols emitted from `src/index.ts`.
 - Inconsistent naming: `InternalLoggerConfig` is publicly exported even though its name labels it internal. The telemetry-related configuration types use `service.name`, while `InternalLoggerConfig` uses `serviceName`.
 - Duplicate APIs: raw instrument factories (`createCounter`, `createHistogram`, `createGauge`) overlap with wrapper factories (`createCounterMetric`, `createHistogramMetric`, `createGaugeMetric`). They differ materially—wrappers merge common attributes and cache by name—but this distinction should be prominent in introductory documentation.
 - APIs exposing internal implementation details: public signatures expose external Pino and OpenTelemetry types, which makes those dependency APIs part of the effective contract. Several public getters/factories throw `NotInitializedError`, but that error type is not exported. `TelemetryAlreadyInitializedError` and `TelemetryNotInitializedError` are public although the manager that directly uses them is not public.
 - APIs that probably should not be public: `InternalLoggerConfig` and `clearComponentLoggers` look internal/test-oriented; `TelemetryNotInitializedError` has no direct public throw site. Consider keeping them only if a documented integration need exists.
 - Missing JSDoc comments: exported interfaces in `src/metrics/types.ts`, `src/logger/context.ts`, `src/logger/transports.ts`, `src/logger/logger.ts`, and most exported functions/classes lack source JSDoc. The root `src/errors.ts` error classes also lack JSDoc. Existing comments in `src/types.ts` and `UpDownCounterMetricOptions` are partial rather than API-complete.
-- Opportunities to simplify the public API: make `InternalLoggerConfig` private or rename it `LoggerInitConfig`; export the initialization error type used by `getLogger` and `getMeter`, or use the public telemetry error types consistently; consider choosing either raw factories or wrapper factories as the primary API; and consider making context, tracing, HTTP, RabbitMQ, database, SMPP, and NestJS subpaths explicit `package.json` exports only when they are supported contracts.
+- Opportunities to simplify the public API: make `InternalLoggerConfig` private or rename it `LoggerInitConfig`; export the initialization error type used by `getLogger` and `getMeter`, or use the public telemetry error types consistently; consider choosing either raw factories or wrapper factories as the primary API; and split the large root barrel into explicit supported subpath exports if independent module imports are a supported contract.
 
 # Public API Summary
 
@@ -2301,15 +2314,18 @@ Metrics
   createUpDownCounterMetric()
 
 Tracing
-  (no root-package exports)
+  TracerConfig, initTracer(), getTracer(), startSpan(), startActiveSpan()
+  getActiveSpan(), finishSpan(), failSpan(), endSpan()
+  withSpan(), withSpanSync(), withSyncSpan(), withPromiseSpan(), withObservableSpan()
+  traceObservable(), setAttribute(), setAttributes(), setStatus(), recordException(), addEvent(), spanNaming
 HTTP
-  (no root-package exports)
+  Request context, headers, lifecycle, middleware, logging, metrics, tracing, constants, and HTTP types
 RabbitMQ
-  (no root-package exports)
+  Consumer, publisher, context propagation, lifecycle, logging, metrics, constants, and channel types
 Database
-  (no root-package exports)
+  Lifecycle, logging, metrics, and constants
 SMPP
-  (no root-package exports)
+  Lifecycle, logging, metrics, and constants
 NestJS
   (no root-package exports)
 
@@ -2326,5 +2342,5 @@ Errors
   TelemetryNotInitializedError
 
 Constants
-  (no root-package exports)
+  HTTP, RabbitMQ, database, and SMPP constants
 ```

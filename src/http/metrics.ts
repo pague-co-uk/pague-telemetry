@@ -6,6 +6,7 @@ import {
   GaugeMetric,
   HistogramMetric,
 } from '../metrics';
+import { createLazyMetricBundle } from '../metrics/lazy';
 
 import {
   DEFAULT_ACTIVE_REQUESTS,
@@ -125,12 +126,8 @@ class HttpMetrics {
   }
 }
 
-let httpMetrics: HttpMetrics | undefined;
+const getHttpMetrics = createLazyMetricBundle(
+  () => new HttpMetrics(),
+);
 
-export function getHttpMetrics(): HttpMetrics {
-  if (!httpMetrics) {
-    httpMetrics = new HttpMetrics();
-  }
-
-  return httpMetrics;
-}
+export { getHttpMetrics };

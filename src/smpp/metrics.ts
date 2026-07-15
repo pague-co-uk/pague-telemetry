@@ -3,130 +3,120 @@ import {
   createHistogramMetric,
   createUpDownCounterMetric,
 } from '../metrics';
+import { createLazyMetricBundle } from '../metrics/lazy';
+import type {
+  CounterMetric,
+  HistogramMetric,
+  UpDownCounterMetric,
+} from '../metrics';
 
 import {
   SmppMetrics,
 } from './constants';
 
-const bindCounter =
-  createCounterMetric({
-    name: SmppMetrics.BIND_TOTAL,
-    description:
-      'Total SMPP bind requests',
-  });
+interface SmppMetricBundle {
+  bindCounter: CounterMetric;
+  failedBindCounter: CounterMetric;
+  submitCounter: CounterMetric;
+  failedSubmitCounter: CounterMetric;
+  deliverCounter: CounterMetric;
+  failedDeliverCounter: CounterMetric;
+  enquireLinkCounter: CounterMetric;
+  unbindCounter: CounterMetric;
+  activeSessionsCounter: UpDownCounterMetric;
+  pduDurationHistogram: HistogramMetric;
+}
 
-const failedBindCounter =
-  createCounterMetric({
-    name: SmppMetrics.BIND_FAILED,
-    description:
-      'Total failed SMPP bind requests',
-  });
-
-const submitCounter =
-  createCounterMetric({
-    name: SmppMetrics.SUBMIT_TOTAL,
-    description:
-      'Total submit_sm PDUs',
-  });
-
-const failedSubmitCounter =
-  createCounterMetric({
-    name: SmppMetrics.SUBMIT_FAILED,
-    description:
-      'Total failed submit_sm PDUs',
-  });
-
-const deliverCounter =
-  createCounterMetric({
-    name: SmppMetrics.DELIVER_TOTAL,
-    description:
-      'Total deliver_sm PDUs',
-  });
-
-const failedDeliverCounter =
-  createCounterMetric({
-    name: SmppMetrics.DELIVER_FAILED,
-    description:
-      'Total failed deliver_sm PDUs',
-  });
-
-const enquireLinkCounter =
-  createCounterMetric({
-    name:
-      SmppMetrics.ENQUIRE_LINK_TOTAL,
-    description:
-      'Total enquire_link PDUs',
-  });
-
-const unbindCounter =
-  createCounterMetric({
-    name:
-      SmppMetrics.UNBIND_TOTAL,
-    description:
-      'Total unbind PDUs',
-  });
-
-const activeSessionsCounter =
-  createUpDownCounterMetric({
-    name:
-      SmppMetrics.ACTIVE_SESSIONS,
-    description:
-      'Number of active SMPP sessions',
-  });
-
-const pduDurationHistogram =
-  createHistogramMetric({
-    name:
-      SmppMetrics.PDU_DURATION,
-    description:
-      'SMPP PDU processing duration',
-    unit: 'ms',
-  });
+const getMetrics = createLazyMetricBundle<SmppMetricBundle>(
+  () => ({
+    bindCounter: createCounterMetric({
+      name: SmppMetrics.BIND_TOTAL,
+      description: 'Total SMPP bind requests',
+    }),
+    failedBindCounter: createCounterMetric({
+      name: SmppMetrics.BIND_FAILED,
+      description: 'Total failed SMPP bind requests',
+    }),
+    submitCounter: createCounterMetric({
+      name: SmppMetrics.SUBMIT_TOTAL,
+      description: 'Total submit_sm PDUs',
+    }),
+    failedSubmitCounter: createCounterMetric({
+      name: SmppMetrics.SUBMIT_FAILED,
+      description: 'Total failed submit_sm PDUs',
+    }),
+    deliverCounter: createCounterMetric({
+      name: SmppMetrics.DELIVER_TOTAL,
+      description: 'Total deliver_sm PDUs',
+    }),
+    failedDeliverCounter: createCounterMetric({
+      name: SmppMetrics.DELIVER_FAILED,
+      description: 'Total failed deliver_sm PDUs',
+    }),
+    enquireLinkCounter: createCounterMetric({
+      name: SmppMetrics.ENQUIRE_LINK_TOTAL,
+      description: 'Total enquire_link PDUs',
+    }),
+    unbindCounter: createCounterMetric({
+      name: SmppMetrics.UNBIND_TOTAL,
+      description: 'Total unbind PDUs',
+    }),
+    activeSessionsCounter: createUpDownCounterMetric({
+      name: SmppMetrics.ACTIVE_SESSIONS,
+      description: 'Number of active SMPP sessions',
+    }),
+    pduDurationHistogram: createHistogramMetric({
+      name: SmppMetrics.PDU_DURATION,
+      description: 'SMPP PDU processing duration',
+      unit: 'ms',
+    }),
+  }),
+);
 
 export function recordBind(): void {
-  bindCounter.increment();
+  getMetrics().bindCounter.increment();
 }
 
 export function recordFailedBind(): void {
-  failedBindCounter.increment();
+  getMetrics().failedBindCounter.increment();
 }
 
 export function recordSubmit(): void {
-  submitCounter.increment();
+  getMetrics().submitCounter.increment();
 }
 
 export function recordFailedSubmit(): void {
-  failedSubmitCounter.increment();
+  getMetrics().failedSubmitCounter.increment();
 }
 
 export function recordDeliver(): void {
-  deliverCounter.increment();
+  getMetrics().deliverCounter.increment();
 }
 
 export function recordFailedDeliver(): void {
-  failedDeliverCounter.increment();
+  getMetrics().failedDeliverCounter.increment();
 }
 
 export function recordEnquireLink(): void {
-  enquireLinkCounter.increment();
+  getMetrics().enquireLinkCounter.increment();
 }
 
 export function recordUnbind(): void {
-  unbindCounter.increment();
+  getMetrics().unbindCounter.increment();
 }
 
 export function incrementActiveSessions(): void {
-  activeSessionsCounter.increment();
+  getMetrics().activeSessionsCounter.increment();
 }
 
 export function decrementActiveSessions(): void {
-  activeSessionsCounter.decrement();
+  getMetrics().activeSessionsCounter.decrement();
 }
 
 export function recordPduDuration(
   durationMs: number,
 ): void {
-  pduDurationHistogram.record(
+  getMetrics().pduDurationHistogram.record(
     durationMs,
   );
 }

@@ -340,6 +340,11 @@ If TypeScript resolves the package successfully, installation is complete.
 
 The SDK should be initialized before your application begins accepting requests.
 
+Importing the package is side-effect free: it does not create telemetry
+resources, register exporters, or install process handlers. `initTelemetry()`
+is the single initialization entry point; integration metrics are created only
+when first used after initialization.
+
 The initialization process creates:
 
 - OpenTelemetry SDK

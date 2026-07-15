@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "test": "npm run build && node --test test/*.test.cjs",
     "clean": "rm -rf dist node_modules package-lock.json"
   },
   "publishConfig": {

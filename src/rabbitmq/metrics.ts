@@ -2,68 +2,71 @@ import {
   createCounterMetric,
   createHistogramMetric,
 } from '../metrics';
+import { createLazyMetricBundle } from '../metrics/lazy';
+import type {
+  CounterMetric,
+  HistogramMetric,
+} from '../metrics';
 
 import {
   RabbitMqMetrics,
 } from './constants';
 
-const publishedCounter =
-  createCounterMetric({
-    name: RabbitMqMetrics.PUBLISHED,
-    description:
-      'Total published RabbitMQ messages',
-  });
+interface RabbitMqMetricBundle {
+  publishedCounter: CounterMetric;
+  consumedCounter: CounterMetric;
+  failedCounter: CounterMetric;
+  publishDuration: HistogramMetric;
+  consumeDuration: HistogramMetric;
+}
 
-const consumedCounter =
-  createCounterMetric({
-    name: RabbitMqMetrics.CONSUMED,
-    description:
-      'Total consumed RabbitMQ messages',
-  });
-
-const failedCounter =
-  createCounterMetric({
-    name: RabbitMqMetrics.FAILED,
-    description:
-      'Total failed RabbitMQ operations',
-  });
-
-const publishDuration =
-  createHistogramMetric({
-    name: RabbitMqMetrics.PUBLISH_DURATION,
-    description:
-      'RabbitMQ publish duration',
-    unit: 'ms',
-  });
-
-const consumeDuration =
-  createHistogramMetric({
-    name: RabbitMqMetrics.CONSUME_DURATION,
-    description:
-      'RabbitMQ consume duration',
-    unit: 'ms',
-  });
+const getMetrics = createLazyMetricBundle<RabbitMqMetricBundle>(
+  () => ({
+    publishedCounter: createCounterMetric({
+      name: RabbitMqMetrics.PUBLISHED,
+      description: 'Total published RabbitMQ messages',
+    }),
+    consumedCounter: createCounterMetric({
+      name: RabbitMqMetrics.CONSUMED,
+      description: 'Total consumed RabbitMQ messages',
+    }),
+    failedCounter: createCounterMetric({
+      name: RabbitMqMetrics.FAILED,
+      description: 'Total failed RabbitMQ operations',
+    }),
+    publishDuration: createHistogramMetric({
+      name: RabbitMqMetrics.PUBLISH_DURATION,
+      description: 'RabbitMQ publish duration',
+      unit: 'ms',
+    }),
+    consumeDuration: createHistogramMetric({
+      name: RabbitMqMetrics.CONSUME_DURATION,
+      description: 'RabbitMQ consume duration',
+      unit: 'ms',
+    }),
+  }),
+);
 
 export function recordPublish(): void {
-  publishedCounter.increment();
+  getMetrics().publishedCounter.increment();
 }
 
 export function recordConsume(): void {
-  consumedCounter.increment();
+  getMetrics().consumedCounter.increment();
 }
 
 export function recordFailure(): void {
-  failedCounter.increment();
+  getMetrics().failedCounter.increment();
 }
 
 export function recordPublishDuration(
   durationMs: number,
 ): void {
-  publishDuration.record(durationMs);
+  getMetrics().publishDuration.record(durationMs);
 }
 
 export function recordConsumeDuration(
   durationMs: number,
 ): void {
-  consumeDuration.record(durationMs);
+  getMetrics().consumeDuration.record(durationMs);
 }
