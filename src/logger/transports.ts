@@ -1,7 +1,4 @@
-import fs from 'node:fs';
-import path from 'node:path';
-
-import { SonicBoom } from 'sonic-boom';
+import pino from 'pino';
 
 import {
   DEFAULT_LOG_FILE_ENABLED,
@@ -23,14 +20,10 @@ export interface TransportConfig {
   file?: FileTransportConfig;
 }
 
-function ensureDirectory(filePath: string): void {
-  fs.mkdirSync(path.dirname(filePath), {
-    recursive: true,
-  });
-}
+export type TransportStream = ReturnType<typeof pino.destination>;
 
-function createStdoutTransport(): SonicBoom {
-  return new SonicBoom({
+function createStdoutTransport(): TransportStream {
+  return pino.destination({
     dest: 1,
     sync: false,
   });
@@ -38,21 +31,19 @@ function createStdoutTransport(): SonicBoom {
 
 function createFileTransport(
   filePath: string,
-): SonicBoom {
-  ensureDirectory(filePath);
-
-  return new SonicBoom({
+): TransportStream {
+  return pino.destination({
     dest: filePath,
-    append: true,
     mkdir: true,
     sync: false,
+    append: true,
   });
 }
 
 export function createTransports(
   config: TransportConfig = {},
-): SonicBoom[] {
-  const transports: SonicBoom[] = [];
+): TransportStream[] {
+  const transports: TransportStream[] = [];
 
   const stdoutEnabled =
     config.stdout ??
