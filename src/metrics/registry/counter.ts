@@ -1,5 +1,5 @@
-import { MetricRegistry } from './MetricRegistry';
-import { CounterMetric } from '../wrappers/CounterMetric';
+import { MetricRegistry } from './MetricRegistry.js';
+import { CounterMetric } from '../wrappers/CounterMetric.js';
 
 export const counterRegistry =
   new MetricRegistry<CounterMetric>();

@@ -1,6 +1,6 @@
-import { Span } from '@opentelemetry/api';
+import type { Span } from '@opentelemetry/api';
 
-import { startActiveSpan } from './span';
+import { startActiveSpan } from './span.js';
 
 export async function withSpan<T>(
   name: string,

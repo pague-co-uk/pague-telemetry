@@ -1,7 +1,7 @@
-import type { TelemetryConfig } from '../types';
+import type { TelemetryConfig } from '../types.js';
 
-import { DEFAULT_EXPORT_INTERVAL_MILLIS } from '../common/constants';
-import { InvalidConfigurationError } from '../common/errors';
+import { DEFAULT_EXPORT_INTERVAL_MILLIS } from '../common/constants.js';
+import { InvalidConfigurationError } from '../common/errors.js';
 
 const VALID_LOG_LEVELS = [
   'trace',

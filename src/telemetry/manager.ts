@@ -2,7 +2,7 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import {
   TelemetryAlreadyInitializedError,
   TelemetryNotInitializedError,
-} from '../errors';
+} from '../errors.js';
 
 export class TelemetryManager {
   private sdk: NodeSDK | null = null;

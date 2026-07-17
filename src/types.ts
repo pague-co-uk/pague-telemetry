@@ -1,4 +1,4 @@
-import type { TransportConfig } from './logger';
+import type { TransportConfig } from './logger/index.js';
 
 export interface ServiceConfig {
   /**

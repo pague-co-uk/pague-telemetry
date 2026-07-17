@@ -1,8 +1,8 @@
 import {
-  CallHandler,
-  ExecutionContext,
+  type CallHandler,
+  type ExecutionContext,
   Injectable,
-  NestInterceptor,
+  type NestInterceptor,
 } from '@nestjs/common';
 
 import {
@@ -19,11 +19,11 @@ import {
   setAttributes,
   spanNaming,
   withObservableSpan,
-} from '../tracing';
+} from '../tracing/index.js';
 
 import {
   getComponentLogger,
-} from '../logger';
+} from '../logger/index.js';
 
 @Injectable()
 export class TelemetryInterceptor

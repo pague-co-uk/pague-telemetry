@@ -1,11 +1,11 @@
 import {
   Injectable,
-  LoggerService,
+  type LoggerService,
 } from '@nestjs/common';
 
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { getLogger } from '../logger';
+import { getLogger } from '../logger/index.js';
 
 @Injectable()
 export class TelemetryLogger

@@ -1,12 +1,12 @@
-import { Span } from '@opentelemetry/api';
+import {type Span } from '@opentelemetry/api';
 
 import {
   failSpan,
   finishSpan,
   startSpan,
-} from '../tracing';
+} from '../tracing/index.js';
 
-import { HttpRequest } from './types';
+import {type HttpRequest } from './types.js';
 
 export function startHttpSpan(
   request: HttpRequest,

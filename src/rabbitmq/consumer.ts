@@ -4,16 +4,16 @@ import {
 
 import {
   extractContext,
-} from './context';
+} from './context.js';
 
 import {
   getRabbitMqLifecycle,
-  RabbitMqLifecycleContext,
-} from './lifecycle';
+  type RabbitMqLifecycleContext,
+} from './lifecycle.js';
 
 import type {
   RabbitMqMessage,
-} from './types';
+} from './types.js';
 
 export interface ConsumeChannel {
   consume(

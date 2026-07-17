@@ -1,6 +1,6 @@
-import { Logger } from 'pino';
+import type { Logger } from 'pino';
 
-import { getLogger } from './logger';
+import { getLogger } from './logger.js';
 
 const componentLoggers = new Map<
   string,

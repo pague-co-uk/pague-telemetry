@@ -1,5 +1,5 @@
-export * from './logger';
+export * from './logger.js';
 
-export * from './interceptor';
+export * from './interceptor.js';
 
-export * from './module';
+export * from './module.js';

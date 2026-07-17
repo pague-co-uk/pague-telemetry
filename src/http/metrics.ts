@@ -5,8 +5,8 @@ import {
   createHistogramMetric,
   GaugeMetric,
   HistogramMetric,
-} from '../metrics';
-import { createLazyMetricBundle } from '../metrics/lazy';
+} from '../metrics/index.js';
+import { createLazyMetricBundle } from '../metrics/lazy.js';
 
 import {
   DEFAULT_ACTIVE_REQUESTS,
@@ -14,7 +14,7 @@ import {
   DEFAULT_REQUEST_DURATION,
   DEFAULT_REQUEST_SIZE,
   DEFAULT_RESPONSE_SIZE,
-} from './constants';
+} from './constants.js';
 
 class HttpMetrics {
   readonly requests: CounterMetric;

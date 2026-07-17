@@ -5,17 +5,17 @@ import {
 import type {
     SmppSessionContext,
     SmppSessionState,
-} from './types';
+} from './types.js';
 
 import {
     decrementActiveSessions,
     incrementActiveSessions,
-} from './metrics';
+} from './metrics.js';
 
 import {
     logSessionConnected,
     logSessionDisconnected,
-} from './logger';
+} from './logger.js';
 
 export class SmppSession {
     private readonly context: SmppSessionContext;

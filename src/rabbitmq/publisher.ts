@@ -1,13 +1,13 @@
-import { injectContext } from './context';
+import { injectContext } from './context.js';
 import {
   getRabbitMqLifecycle,
-  RabbitMqLifecycleContext,
-} from './lifecycle';
+  type RabbitMqLifecycleContext,
+} from './lifecycle.js';
 
 import type {
   RabbitMqPublishContext,
   RabbitMqPublishOptions,
-} from './types';
+} from './types.js';
 
 export interface PublishChannel {
   publish(

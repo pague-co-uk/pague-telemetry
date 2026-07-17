@@ -1,6 +1,6 @@
-import { Meter, metrics } from '@opentelemetry/api';
+import { type Meter, metrics } from '@opentelemetry/api';
 
-import { NotInitializedError } from '../common/errors';
+import { NotInitializedError } from '../common/errors.js';
 
 let meter: Meter | undefined;
 

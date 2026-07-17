@@ -1,13 +1,13 @@
-export * from './tracer';
+export * from './tracer.js';
 
-export * from './span';
+export * from './span.js';
 
-export * from './helpers';
+export * from './helpers.js';
 
-export * from './attributes';
+export * from './attributes.js';
 
-export * from './observable';
+export * from './observable.js';
 
-export * from './execution';
+export * from './execution.js';
 
-export * from './naming';
+export * from './naming.js';

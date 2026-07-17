@@ -1,10 +1,10 @@
 import {
-  AttributeValue,
-  Attributes,
-  Span,
+  type AttributeValue,
+  type Attributes,
+  type Span,
 } from '@opentelemetry/api';
 
-import { getActiveSpan } from './span';
+import { getActiveSpan } from './span.js';
 
 export function setAttribute(
   key: string,

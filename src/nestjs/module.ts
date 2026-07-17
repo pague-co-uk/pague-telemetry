@@ -1,12 +1,12 @@
 import {
-  DynamicModule,
+  type DynamicModule,
   Global,
   Module,
-  Provider,
+  type Provider,
 } from '@nestjs/common';
 
-import { TelemetryInterceptor } from './interceptor';
-import { TelemetryLogger } from './logger';
+import { TelemetryInterceptor } from './interceptor.js';
+import { TelemetryLogger } from './logger.js';
 
 export interface NestTelemetryOptions {
   /**

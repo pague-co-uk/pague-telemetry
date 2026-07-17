@@ -1,12 +1,12 @@
-export * from './meter';
-export * from './counter';
-export * from './histogram';
-export * from './gauge';
-export * from './up-down-counter/metric';
+export * from './meter.js';
+export * from './counter.js';
+export * from './histogram.js';
+export * from './gauge.js';
+export * from './up-down-counter/metric.js';
 
-export * from './context';
-export * from './types';
+export * from './context.js';
+export * from './types.js';
 
-export * from './wrappers/CounterMetric';
-export * from './wrappers/HistogramMetric';
-export * from './wrappers/GaugeMetric';
+export * from './wrappers/CounterMetric.js';
+export * from './wrappers/HistogramMetric.js';
+export * from './wrappers/GaugeMetric.js';

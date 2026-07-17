@@ -1,4 +1,4 @@
-import { MetricAttributes } from './types';
+import type { MetricAttributes } from './types.js';
 
 let commonAttributes: MetricAttributes = {};
 

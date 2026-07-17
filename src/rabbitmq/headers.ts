@@ -2,7 +2,7 @@ import type {
   RabbitMqHeaderValue,
   RabbitMqHeaders,
   RabbitMqMessageProperties,
-} from './types';
+} from './types.js';
 
 export function setHeader(
   properties: RabbitMqMessageProperties,

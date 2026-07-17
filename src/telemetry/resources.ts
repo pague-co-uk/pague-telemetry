@@ -4,7 +4,7 @@ import {
   ATTR_SERVICE_VERSION,
 } from '@opentelemetry/semantic-conventions';
 
-import type { TelemetryConfig } from '../types';
+import type { TelemetryConfig } from '../types.js';
 
 export function createResource(config: TelemetryConfig) {
   return resourceFromAttributes({

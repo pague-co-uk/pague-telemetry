@@ -1,10 +1,10 @@
-import {
+import type {
   ObservableGauge,
   MetricOptions,
   ObservableCallback,
 } from '@opentelemetry/api';
 
-import { getMeter } from './meter';
+import { getMeter } from './meter.js';
 
 export function createGauge(
   name: string,

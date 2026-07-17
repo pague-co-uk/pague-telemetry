@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
-import { RequestContext } from './types';
+import type { RequestContext } from './types.js';
 
 const storage = new AsyncLocalStorage<RequestContext>();
 

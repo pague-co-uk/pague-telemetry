@@ -1,12 +1,12 @@
-import { Logger } from 'pino';
+import {type Logger } from 'pino';
 
 import {
   getComponentLogger,
-} from '../logger';
+} from '../logger/index.js';
 
 import type {
   RabbitMqLifecycleContext,
-} from './lifecycle';
+} from './lifecycle.js';
 
 let logger: Logger | undefined;
 

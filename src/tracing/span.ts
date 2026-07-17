@@ -1,13 +1,16 @@
-import {
+import type {
   Context,
   Span,
   SpanOptions,
+} from '@opentelemetry/api';
+
+import {
   SpanStatusCode,
   context,
   trace,
 } from '@opentelemetry/api';
 
-import { getTracer } from './tracer';
+import { getTracer } from './tracer.js';
 
 export function startSpan(
   name: string,

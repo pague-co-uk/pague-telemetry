@@ -1,12 +1,12 @@
 import type { Histogram } from '@opentelemetry/api';
 
-import { mergeMetricAttributes } from '../context';
-import { createHistogram } from '../histogram';
-import { histogramRegistry } from '../registry/histogram';
-import {
+import { mergeMetricAttributes } from '../context.js';
+import { createHistogram } from '../histogram.js';
+import { histogramRegistry } from '../registry/histogram.js';
+import type {
   HistogramMetricOptions,
   MetricAttributes,
-} from '../types';
+} from '../types.js';
 
 export class HistogramMetric {
   private readonly histogram: Histogram;

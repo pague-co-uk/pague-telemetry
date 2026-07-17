@@ -1,14 +1,14 @@
 import { performance } from 'node:perf_hooks';
 
-import { getComponentLogger } from '../logger';
+import { getComponentLogger } from '../logger/index.js';
 import {
   spanNaming,
   withPromiseSpan,
-} from '../tracing';
+} from '../tracing/index.js';
 
 import {
   RabbitMqComponent,
-} from './constants';
+} from './constants.js';
 
 import {
   recordConsume,
@@ -16,7 +16,7 @@ import {
   recordFailure,
   recordPublish,
   recordPublishDuration,
-} from './metrics';
+} from './metrics.js';
 
 export interface RabbitMqLifecycleContext {
   exchange: string;

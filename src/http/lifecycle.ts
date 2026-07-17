@@ -2,23 +2,23 @@ import { performance } from 'node:perf_hooks';
 
 import {
   establishRequestContext,
-} from './context';
+} from './context.js';
 import {
   logRequestCompleted,
   logRequestFailed,
   logRequestStarted,
-} from './logger';
-import { getHttpMetrics } from './metrics';
+} from './logger.js';
+import { getHttpMetrics } from './metrics.js';
 import {
   finishHttpSpan,
   failHttpSpan,
   startHttpSpan,
-} from './tracing';
-import {
+} from './tracing.js';
+import type {
   HttpContextOptions,
   HttpRequest,
   HttpResponse,
-} from './types';
+} from './types.js';
 
 export class HttpRequestLifecycle {
   private readonly startTime: number;

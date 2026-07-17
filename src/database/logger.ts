@@ -1,10 +1,10 @@
-import { Logger } from 'pino';
+import type { Logger } from 'pino';
 
-import { getComponentLogger } from '../logger';
+import { getComponentLogger } from '../logger/index.js';
 
 import type {
   DatabaseContext,
-} from './types';
+} from './types.js';
 
 let logger: Logger | undefined;
 

@@ -2,17 +2,17 @@ import {
   createCounterMetric,
   createHistogramMetric,
   createUpDownCounterMetric,
-} from '../metrics';
-import { createLazyMetricBundle } from '../metrics/lazy';
+} from '../metrics/index.js';
+import { createLazyMetricBundle } from '../metrics/lazy.js';
 import type {
   CounterMetric,
   HistogramMetric,
   UpDownCounterMetric,
-} from '../metrics';
+} from '../metrics/index.js';
 
 import {
   SmppMetrics,
-} from './constants';
+} from './constants.js';
 
 interface SmppMetricBundle {
   bindCounter: CounterMetric;

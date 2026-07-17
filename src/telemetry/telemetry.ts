@@ -3,18 +3,18 @@ import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 
-import type { TelemetryConfig } from '../types';
+import type { TelemetryConfig } from '../types.js';
 
-import { getEnvironment } from '../common/env';
-import { initLogger } from '../logger';
-import { initMeter, setCommonMetricAttributes } from '../metrics';
-import { initTracer } from '../tracing';
+import { getEnvironment } from '../common/env.js';
+import { initLogger } from '../logger/index.js';
+import { initMeter, setCommonMetricAttributes } from '../metrics/index.js';
+import { initTracer } from '../tracing/index.js';
 
-import { createInstrumentations } from './instrumentations';
-import { telemetryManager } from './manager';
-import { createResource } from './resources';
-import { registerShutdownHooks } from './shutdown';
-import { validateTelemetryConfig } from './validation';
+import { createInstrumentations } from './instrumentations.js';
+import { telemetryManager } from './manager.js';
+import { createResource } from './resources.js';
+import { registerShutdownHooks } from './shutdown.js';
+import { validateTelemetryConfig } from './validation.js';
 
 export function initTelemetry(config: TelemetryConfig): void {
   validateTelemetryConfig(config);

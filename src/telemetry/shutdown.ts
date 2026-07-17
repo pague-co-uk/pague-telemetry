@@ -1,4 +1,4 @@
-import { telemetryManager } from './manager';
+import { telemetryManager } from './manager.js';
 
 let registered = false;
 

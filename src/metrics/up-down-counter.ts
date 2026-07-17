@@ -3,7 +3,7 @@ import type {
   UpDownCounter,
 } from '@opentelemetry/api';
 
-import { getMeter } from './meter';
+import { getMeter } from './meter.js';
 
 export function createUpDownCounter(
   name: string,

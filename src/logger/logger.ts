@@ -1,16 +1,17 @@
-import pino, { Logger, LoggerOptions, multistream } from 'pino';
+import pino, { multistream } from 'pino';
+import type {Logger, LoggerOptions} from 'pino';
 
-import { DEFAULT_LOG_LEVEL, LOG_FIELDS } from '../common/constants';
-import { getLogLevel } from '../common/env';
-import { NotInitializedError } from '../common/errors';
+import { DEFAULT_LOG_LEVEL, LOG_FIELDS } from '../common/constants.js';
+import { getLogLevel } from '../common/env.js';
+import { NotInitializedError } from '../common/errors.js';
 
-import { getTraceContext } from './context';
-import { redaction } from './redaction';
-import { serializers } from './serializers';
+import { getTraceContext } from './context.js';
+import { redaction } from './redaction.js';
+import { serializers } from './serializers.js';
 import {
   createTransports,
-  TransportConfig,
-} from './transports';
+} from './transports.js';
+import type {TransportConfig} from './transports.js';
 
 export interface InternalLoggerConfig {
   serviceName: string;

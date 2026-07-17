@@ -1,13 +1,13 @@
 import {
   createHttpRequestLifecycle,
-} from './lifecycle';
-import {
+} from './lifecycle.js';
+import type {
   HttpMiddleware,
   HttpOptions,
   HttpRequest,
   HttpResponse,
   NextFunction,
-} from './types';
+} from './types.js';
 
 export function createHttpMiddleware(
   options: HttpOptions = {},

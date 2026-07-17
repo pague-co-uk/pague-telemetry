@@ -1,12 +1,10 @@
 import { Observable } from 'rxjs';
 
-import { Span } from '@opentelemetry/api';
-
 import {
   failSpan,
   finishSpan,
   startSpan,
-} from './span';
+} from './span.js';
 
 export function traceObservable<T>(
   name: string,

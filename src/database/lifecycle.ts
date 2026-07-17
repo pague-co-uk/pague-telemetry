@@ -3,30 +3,30 @@ import { performance } from 'node:perf_hooks';
 import {
   spanNaming,
   withPromiseSpan,
-} from '../tracing';
+} from '../tracing/index.js';
 
 import {
   DatabaseAttributes,
-} from './constants';
+} from './constants.js';
 
 import type {
   DatabaseContext,
   DatabaseExecutionResult,
   DatabaseOptions,
-} from './types';
+} from './types.js';
 
 import {
   logQueryCompleted,
   logQueryFailed,
   logQueryStarted,
   logSlowQuery,
-} from './logger';
+} from './logger.js';
 
 import {
   recordFailedQuery,
   recordQuery,
   recordQueryDuration,
-} from './metrics';
+} from './metrics.js';
 
 const DEFAULT_SLOW_QUERY_THRESHOLD_MS =
   1000;

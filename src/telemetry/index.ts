@@ -1,1 +1,1 @@
-export { initTelemetry, shutdownTelemetry } from './telemetry';
+export { initTelemetry, shutdownTelemetry } from './telemetry.js';

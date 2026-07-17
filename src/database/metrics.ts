@@ -1,16 +1,16 @@
 import {
   createCounterMetric,
   createHistogramMetric,
-} from '../metrics';
-import { createLazyMetricBundle } from '../metrics/lazy';
+} from '../metrics/index.js';
+import { createLazyMetricBundle } from '../metrics/lazy.js';
 import type {
   CounterMetric,
   HistogramMetric,
-} from '../metrics';
+} from '../metrics/index.js';
 
 import {
   DatabaseMetrics,
-} from './constants';
+} from './constants.js';
 
 interface DatabaseMetricBundle {
   queryCounter: CounterMetric;

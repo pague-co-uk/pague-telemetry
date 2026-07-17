@@ -3,8 +3,8 @@ import { randomUUID } from 'node:crypto';
 import {
   CORRELATION_ID_HEADER,
   REQUEST_ID_HEADER,
-} from './constants';
-import { HttpRequest } from './types';
+} from './constants.js';
+import type { HttpRequest } from './types.js';
 
 export function getHeader(
   request: HttpRequest,

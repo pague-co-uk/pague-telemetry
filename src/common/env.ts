@@ -1,7 +1,7 @@
 import {
   DEFAULT_ENVIRONMENT,
   DEFAULT_LOG_LEVEL,
-} from './constants';
+} from './constants.js';
 
 export function getEnv(
   key: string,

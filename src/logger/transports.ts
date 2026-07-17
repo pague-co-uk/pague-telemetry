@@ -7,11 +7,11 @@ import {
   DEFAULT_LOG_FILE_ENABLED,
   DEFAULT_LOG_FILE_PATH,
   DEFAULT_LOG_STDOUT_ENABLED,
-} from '../common/constants';
+} from '../common/constants.js';
 import {
   getBooleanEnv,
   getEnv,
-} from '../common/env';
+} from '../common/env.js';
 
 export interface FileTransportConfig {
   enabled: boolean;

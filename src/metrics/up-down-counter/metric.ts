@@ -2,14 +2,14 @@ import type {
   UpDownCounter,
 } from '@opentelemetry/api';
 
-import { mergeMetricAttributes } from '../context';
-import { createUpDownCounter } from '../up-down-counter';
-import { upDownCounterRegistry } from '../registry/up-down-counter';
+import { mergeMetricAttributes } from '../context.js';
+import { createUpDownCounter } from '../up-down-counter.js';
+import { upDownCounterRegistry } from '../registry/up-down-counter.js';
 
 import type {
   MetricAttributes,
   UpDownCounterMetricOptions,
-} from '../types';
+} from '../types.js';
 
 export class UpDownCounterMetric {
   private readonly counter: UpDownCounter;

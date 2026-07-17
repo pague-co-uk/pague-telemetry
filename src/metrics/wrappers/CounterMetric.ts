@@ -1,12 +1,12 @@
 import type { Counter } from '@opentelemetry/api';
 
-import { mergeMetricAttributes } from '../context';
-import { createCounter } from '../counter';
-import { counterRegistry } from '../registry/counter';
-import {
+import { mergeMetricAttributes } from '../context.js';
+import { createCounter } from '../counter.js';
+import { counterRegistry } from '../registry/counter.js';
+import type {
   CounterMetricOptions,
   MetricAttributes,
-} from '../types';
+} from '../types.js';
 
 export class CounterMetric {
   private readonly counter: Counter;

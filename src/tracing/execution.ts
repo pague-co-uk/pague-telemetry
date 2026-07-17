@@ -1,7 +1,9 @@
-import {
+import type {
   Context,
   Span,
-  SpanOptions,
+  SpanOptions
+} from '@opentelemetry/api';
+import {
   context,
   trace,
 } from '@opentelemetry/api';
@@ -11,7 +13,7 @@ import {
   failSpan,
   finishSpan,
   startSpan,
-} from './span';
+} from './span.js';
 
 function createSpanContext(
   name: string,

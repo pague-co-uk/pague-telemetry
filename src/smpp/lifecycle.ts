@@ -3,12 +3,12 @@ import { performance } from 'node:perf_hooks';
 import {
   spanNaming,
   withPromiseSpan,
-} from '../tracing';
+} from '../tracing/index.js';
 
 import {
   SmppAttributes,
   SmppCommands,
-} from './constants';
+} from './constants.js';
 
 import {
   logBindCompleted,
@@ -17,7 +17,7 @@ import {
   logPduFailed,
   logPduProcessed,
   logPduReceived,
-} from './logger';
+} from './logger.js';
 
 import {
   recordBind,
@@ -29,13 +29,13 @@ import {
   recordPduDuration,
   recordSubmit,
   recordUnbind,
-} from './metrics';
+} from './metrics.js';
 
 import type {
   SmppContext,
   SmppExecutionResult,
   SmppOptions,
-} from './types';
+} from './types.js';
 
 export class SmppLifecycle {
   async execute<T>(

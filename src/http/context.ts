@@ -1,18 +1,18 @@
 import {
   updateContext,
-} from '../context/context';
+} from '../context/index.js';
 
 import {
   getCorrelationId,
   getRequestId,
   setCorrelationId,
   setRequestId,
-} from './headers';
-import {
+} from './headers.js';
+import type {
   HttpRequest,
   HttpResponse,
   HttpContextOptions,
-} from './types';
+} from './types.js';
 
 export function establishRequestContext(
   request: HttpRequest,

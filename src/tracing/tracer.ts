@@ -1,6 +1,6 @@
-import { trace, Tracer } from '@opentelemetry/api';
+import { trace, type Tracer } from '@opentelemetry/api';
 
-import { NotInitializedError } from '../common/errors';
+import { NotInitializedError } from '../common/errors.js';
 
 let tracer: Tracer | undefined;
 

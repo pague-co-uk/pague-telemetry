@@ -1,5 +1,5 @@
-import { MetricRegistry } from './MetricRegistry';
-import { HistogramMetric } from '../wrappers/HistogramMetric';
+import { MetricRegistry } from './MetricRegistry.js';
+import { HistogramMetric } from '../wrappers/HistogramMetric.js';
 
 export const histogramRegistry =
   new MetricRegistry<HistogramMetric>();

@@ -1,20 +1,20 @@
 import {
-  ArgumentsHost,
+  type ArgumentsHost,
   Catch,
-  ExceptionFilter,
+  type ExceptionFilter,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
 
 import {
   getComponentLogger,
-} from '../logger';
+} from '../logger/index.js';
 
 import {
   getActiveSpan,
   recordException,
   setAttributes,
-} from '../tracing';
+} from '../tracing/index.js';
 
 @Catch()
 export class TelemetryExceptionFilter

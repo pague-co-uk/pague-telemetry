@@ -1,12 +1,12 @@
 import type { ObservableGauge } from '@opentelemetry/api';
 
-import { mergeMetricAttributes } from '../context';
-import { createGauge } from '../gauge';
-import { gaugeRegistry } from '../registry/gauge';
-import {
+import { mergeMetricAttributes } from '../context.js';
+import { createGauge } from '../gauge.js';
+import { gaugeRegistry } from '../registry/gauge.js';
+import type {
   GaugeMetricOptions,
   MetricAttributes,
-} from '../types';
+} from '../types.js';
 
 export class GaugeMetric {
   private readonly gauge: ObservableGauge;

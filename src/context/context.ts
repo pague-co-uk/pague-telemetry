@@ -1,12 +1,12 @@
-import { getActiveSpan } from '../tracing';
+import { getActiveSpan } from '../tracing/index.js';
 
 import {
   clearContext,
   getContext,
   runWithContext,
   setContext,
-} from './storage';
-import { RequestContext } from './types';
+} from './storage.js';
+import type { RequestContext } from './types.js';
 
 export function withContext<T>(
   context: RequestContext,

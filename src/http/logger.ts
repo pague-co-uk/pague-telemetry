@@ -1,8 +1,8 @@
 import {
   getComponentLogger,
-} from '../logger';
+} from '../logger/index.js';
 
-import { HttpRequest } from './types';
+import type { HttpRequest } from './types.js';
 
 function logger() {
   return getComponentLogger('http');

@@ -1,10 +1,10 @@
 import type {
   SmppContext,
-} from './types';
+} from './types.js';
 
 import {
   getSmppLifecycle,
-} from './lifecycle';
+} from './lifecycle.js';
 
 export async function instrumentPdu<T>(
   context: SmppContext,

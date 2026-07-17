@@ -1,6 +1,6 @@
 import { context, trace } from '@opentelemetry/api';
 
-import { currentContext } from '../context/context';
+import { currentContext } from '../context/index.js';
 
 export interface LoggerContext {
   traceId?: string;

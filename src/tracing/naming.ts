@@ -1,4 +1,4 @@
-import type { HttpRequest } from '../http';
+import type { HttpRequest } from '../http/index.js';
 
 export const spanNaming = {
   http(request: HttpRequest): string {

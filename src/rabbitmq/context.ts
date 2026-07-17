@@ -1,29 +1,29 @@
 import {
-  Context,
-  TextMapGetter,
-  TextMapSetter,
+  type Context,
+  type TextMapGetter,
+  type TextMapSetter,
   context,
   propagation,
 } from '@opentelemetry/api';
 
 import type {
   RequestContext,
-} from '../context/types';
+} from '../context/types.js';
 
 import {
   currentContext,
   updateContext,
-} from '../context/context';
+} from '../context/index.js';
 
 import {
   RabbitMqHeaders as HeaderNames,
-} from './constants';
+} from './constants.js';
 
 import type {
   RabbitMqMessageProperties,
   RabbitMqHeaders,
   TelemetryHeaders,
-} from './types';
+} from './types.js';
 
 const setter: TextMapSetter<TelemetryHeaders> = {
   set(carrier, key, value) {

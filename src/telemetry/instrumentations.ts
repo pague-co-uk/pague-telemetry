@@ -1,6 +1,6 @@
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 
-import type { TelemetryConfig } from '../types';
+import type { TelemetryConfig } from '../types.js';
 
 export function createInstrumentations(config: TelemetryConfig) {
   return getNodeAutoInstrumentations({

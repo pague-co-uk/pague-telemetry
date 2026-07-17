@@ -1,8 +1,8 @@
-export * from './logger';
-export * from './context';
-export * from './child';
+export * from './logger.js';
+export * from './context.js';
+export * from './child.js';
 export type {
   TransportConfig,
   FileTransportConfig,
-} from './transports';
-export * from './component';
+} from './transports.js';
+export * from './component.js';
