@@ -54,9 +54,9 @@ export function initLogger(
 
   logger = pino(
     options,
-    multistream(
-      createTransports(config.transport),
-    ),
+    // multistream(
+    //   createTransports(config.transport),
+    // ),
   );
 
   return logger;
