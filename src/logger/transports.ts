@@ -1,14 +1,15 @@
-import pino from 'pino';
+import pino from "pino";
+import type { StreamEntry } from "pino";
 
 import {
   DEFAULT_LOG_FILE_ENABLED,
   DEFAULT_LOG_FILE_PATH,
   DEFAULT_LOG_STDOUT_ENABLED,
-} from '../common/constants.js';
+} from "../common/constants.js";
 import {
   getBooleanEnv,
   getEnv,
-} from '../common/env.js';
+} from "../common/env.js";
 
 export interface FileTransportConfig {
   enabled: boolean;
@@ -20,24 +21,30 @@ export interface TransportConfig {
   file?: FileTransportConfig;
 }
 
-export type TransportStream = ReturnType<typeof pino.destination>;
+export type TransportStream = StreamEntry;
 
 function createStdoutTransport(): TransportStream {
-  return pino.destination({
-    dest: 1,
-    sync: false,
-  });
+  return {
+    level: "trace",
+    stream: pino.destination({
+      dest: 1,
+      sync: false,
+    }),
+  };
 }
 
 function createFileTransport(
   filePath: string,
 ): TransportStream {
-  return pino.destination({
-    dest: filePath,
-    mkdir: true,
-    sync: false,
-    append: true,
-  });
+  return {
+    level: "trace",
+    stream: pino.destination({
+      dest: filePath,
+      mkdir: true,
+      sync: false,
+      append: true,
+    }),
+  };
 }
 
 export function createTransports(
@@ -48,7 +55,7 @@ export function createTransports(
   const stdoutEnabled =
     config.stdout ??
     getBooleanEnv(
-      'LOG_STDOUT',
+      "LOG_STDOUT",
       DEFAULT_LOG_STDOUT_ENABLED,
     );
 
@@ -59,7 +66,7 @@ export function createTransports(
   const fileEnabled =
     config.file?.enabled ??
     getBooleanEnv(
-      'LOG_FILE_ENABLED',
+      "LOG_FILE_ENABLED",
       DEFAULT_LOG_FILE_ENABLED,
     );
 
@@ -67,7 +74,7 @@ export function createTransports(
     const filePath =
       config.file?.path ??
       getEnv(
-        'LOG_FILE_PATH',
+        "LOG_FILE_PATH",
         DEFAULT_LOG_FILE_PATH,
       )!;
 
