@@ -1,13 +1,14 @@
 {
   "name": "@pague-co-uk/sms-gateway-telemetry",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Shared OpenTelemetry bootstrap, metrics and logging for Pague services",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "files": [
@@ -24,12 +25,13 @@
   "license": "ISC",
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
-    "@opentelemetry/sdk-node": "^0.220.0",
     "@opentelemetry/auto-instrumentations-node": "^0.78.0",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.220.0",
     "@opentelemetry/exporter-metrics-otlp-http": "^0.220.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.220.0",
+    "@opentelemetry/sdk-node": "^0.220.0",
     "pino": "^9.5.0",
-    "pino-http": "^10.3.0"
+    "pino-http": "^10.3.0",
+    "tsup": "^8.5.1"
   },
   "peerDependencies": {
     "nestjs-pino": "^4.2.0"
