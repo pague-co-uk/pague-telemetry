@@ -52,12 +52,18 @@ export function initLogger(
     },
   };
 
-  logger = pino(
-    options,
-    // multistream(
-    //   createTransports(config.transport),
-    // ),
-  );
+const transports = createTransports(
+  config.transport,
+);
+
+console.dir(transports, {
+  depth: null,
+});
+
+logger = pino(
+  options,
+  multistream(transports),
+);
 
   return logger;
 }
