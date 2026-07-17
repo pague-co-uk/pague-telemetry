@@ -1,0 +1,37 @@
+import {
+  getComponentLogger,
+  getLogger,
+} from "./index.js";
+
+export const Components = {
+  APP: "app",
+  HTTP: "http",
+  DATABASE: "database",
+  RABBITMQ: "rabbitmq",
+  SMPP: "smpp",
+} as const;
+
+export type Component =
+  (typeof Components)[keyof typeof Components];
+
+export const Loggers = {
+  get app() {
+    return getLogger();
+  },
+
+  get http() {
+    return getComponentLogger(Components.HTTP);
+  },
+
+  get database() {
+    return getComponentLogger(Components.DATABASE);
+  },
+
+  get rabbitmq() {
+    return getComponentLogger(Components.RABBITMQ);
+  },
+
+  get smpp() {
+    return getComponentLogger(Components.SMPP);
+  },
+} as const;
