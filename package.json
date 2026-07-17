@@ -1,6 +1,6 @@
 {
   "name": "@pague-co-uk/sms-gateway-telemetry",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Shared OpenTelemetry bootstrap, metrics and logging for Pague services",
   "type": "module",
   "main": "./dist/index.js",
