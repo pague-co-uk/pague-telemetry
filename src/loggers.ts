@@ -1,7 +1,10 @@
 import {
   getComponentLogger,
+} from "./logger/component.js";
+
+import {
   getLogger,
-} from "./index.js";
+} from "./logger/index.js";
 
 export const Components = {
   APP: "app",
