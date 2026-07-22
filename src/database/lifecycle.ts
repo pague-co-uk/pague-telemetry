@@ -32,15 +32,12 @@ const DEFAULT_SLOW_QUERY_THRESHOLD_MS =
   1000;
 
 export class DatabaseLifecycle {
-  async execute<T>(
+  async execute<TResult>(
     context: DatabaseContext,
-    callback: () => Promise<
-      DatabaseExecutionResult<T>
-    >,
+    callback: () => Promise<DatabaseExecutionResult<TResult>>,
     options: DatabaseOptions = {},
-  ): Promise<T> {
-    const startedAt =
-      performance.now();
+  ): Promise<TResult> {
+    const startedAt = performance.now();
 
     return withPromiseSpan(
       spanNaming.database(
@@ -49,38 +46,32 @@ export class DatabaseLifecycle {
       ),
       async (span) => {
         span.setAttributes({
-          [DatabaseAttributes.SYSTEM]:
-            context.system,
+          [DatabaseAttributes.SYSTEM]: context.system,
 
           ...(context.database && {
-            [DatabaseAttributes.NAME]:
-              context.database,
+            [DatabaseAttributes.NAME]: context.database,
           }),
 
           [DatabaseAttributes.OPERATION]:
             context.operation,
 
           ...(context.table && {
-            [DatabaseAttributes.TABLE]:
-              context.table,
+            [DatabaseAttributes.TABLE]: context.table,
           }),
         });
 
         logQueryStarted(context);
 
         try {
-          const result =
+          const execution =
             await callback();
 
           const durationMs =
-            performance.now() -
-            startedAt;
+            performance.now() - startedAt;
 
           recordQuery();
 
-          recordQueryDuration(
-            durationMs,
-          );
+          recordQueryDuration(durationMs);
 
           span.setAttribute(
             DatabaseAttributes.SUCCESS,
@@ -88,45 +79,39 @@ export class DatabaseLifecycle {
           );
 
           if (
-            result.rowsAffected !==
-            undefined
+            execution.rowsAffected !== undefined
           ) {
             span.setAttribute(
               DatabaseAttributes.ROW_COUNT,
-              result.rowsAffected,
+              execution.rowsAffected,
             );
           }
 
           logQueryCompleted(
             context,
             durationMs,
-            result.rowsAffected,
+            execution.rowsAffected,
           );
 
           const threshold =
             options.slowQueryThresholdMs ??
             DEFAULT_SLOW_QUERY_THRESHOLD_MS;
 
-          if (
-            durationMs >= threshold
-          ) {
+          if (durationMs >= threshold) {
             logSlowQuery(
               context,
               durationMs,
             );
           }
 
-          return result.result;
+          return execution.result;
         } catch (error) {
           const durationMs =
-            performance.now() -
-            startedAt;
+            performance.now() - startedAt;
 
           recordFailedQuery();
 
-          recordQueryDuration(
-            durationMs,
-          );
+          recordQueryDuration(durationMs);
 
           span.setAttribute(
             DatabaseAttributes.SUCCESS,
