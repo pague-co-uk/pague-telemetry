@@ -21,13 +21,6 @@ import { validateTelemetryConfig } from './validation.js';
 export function initTelemetry(config: TelemetryConfig): void {
   validateTelemetryConfig(config);
 
-  initLogger({
-    serviceName: config.service.name,
-    serviceVersion: config.service.version,
-    ...(config.logger?.level && { level: config.logger.level }),
-    ...(config.logger?.transport && { transport: config.logger.transport }),
-  });
-
   initTracer({
     serviceName: config.service.name,
     version: config.service.version,
@@ -45,6 +38,13 @@ export function initTelemetry(config: TelemetryConfig): void {
   });
 
   if (config.enabled === false) {
+    initLogger({
+      serviceName: config.service.name,
+      serviceVersion: config.service.version,
+      ...(config.logger?.level && { level: config.logger.level }),
+      ...(config.logger?.transport && { transport: config.logger.transport }),
+    });
+
     return;
   }
 
@@ -80,6 +80,13 @@ export function initTelemetry(config: TelemetryConfig): void {
   const sdk = new NodeSDK(sdkConfig);
 
   sdk.start();
+
+  initLogger({
+    serviceName: config.service.name,
+    serviceVersion: config.service.version,
+    ...(config.logger?.level && { level: config.logger.level }),
+    ...(config.logger?.transport && { transport: config.logger.transport }),
+  });
 
   telemetryManager.initialize(sdk);
 
