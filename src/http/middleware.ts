@@ -24,24 +24,26 @@ export function createHttpMiddleware(
         options.context,
       );
 
-    lifecycle.start();
+    lifecycle.run(() => {
+      lifecycle.start();
 
-    response.on?.(
-      'finish',
-      () => lifecycle.finish(),
-    );
+      response.on?.(
+        'finish',
+        () => lifecycle.finish(),
+      );
 
-    response.on?.(
-      'close',
-      () => lifecycle.finish(),
-    );
+      response.on?.(
+        'close',
+        () => lifecycle.finish(),
+      );
 
-    try {
-      next();
-    } catch (error) {
-      lifecycle.fail(error);
+      try {
+        next();
+      } catch (error) {
+        lifecycle.fail(error);
 
-      throw error;
-    }
+        throw error;
+      }
+    });
   };
 }

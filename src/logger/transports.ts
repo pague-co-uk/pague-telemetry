@@ -1,5 +1,5 @@
-import pino from "pino";
 import type { StreamEntry } from "pino";
+import pino from "pino";
 
 import {
   DEFAULT_LOG_FILE_ENABLED,

@@ -77,8 +77,6 @@ class HttpMetrics {
     >,
   ): void {
     this.activeRequestCount++;
-
-    this.requests.increment(attributes);
   }
 
   requestCompleted(
@@ -92,6 +90,8 @@ class HttpMetrics {
       0,
       this.activeRequestCount - 1,
     );
+
+    this.requests.increment(attributes);
 
     this.requestDuration.record(
       durationMs,

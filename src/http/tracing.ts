@@ -40,6 +40,15 @@ export function finishHttpSpan(
   span: Span,
   statusCode: number,
 ): void {
+  if (statusCode >= 500) {
+    failSpan(
+      span,
+      new Error(`HTTP ${statusCode}`),
+      { 'http.status_code': statusCode },
+    );
+    return;
+  }
+
   finishSpan(span, {
     'http.status_code': statusCode,
   });

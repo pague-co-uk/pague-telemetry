@@ -17,6 +17,12 @@ export interface HttpRequest {
 
   params?: Record<string, unknown>;
 
+  route?: {
+    path?: string;
+  };
+
+  baseUrl?: string;
+
   body?: unknown;
 
   get?(name: string): string | undefined;

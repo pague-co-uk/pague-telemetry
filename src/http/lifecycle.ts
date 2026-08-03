@@ -1,4 +1,5 @@
 import { performance } from 'node:perf_hooks';
+import { context, trace } from '@opentelemetry/api';
 
 import {
   establishRequestContext,
@@ -19,6 +20,14 @@ import type {
   HttpRequest,
   HttpResponse,
 } from './types.js';
+
+function routeFor(request: HttpRequest): string {
+  if (request.route?.path) {
+    return `${request.baseUrl ?? ''}${request.route.path}`;
+  }
+
+  return request.path ?? request.url.split('?')[0] ?? request.url;
+}
 
 export class HttpRequestLifecycle {
   private readonly startTime: number;
@@ -48,9 +57,7 @@ export class HttpRequestLifecycle {
   start(): void {
     this.metrics.requestStarted({
       method: this.request.method,
-      route:
-        this.request.path ??
-        this.request.url,
+      route: routeFor(this.request),
     });
 
     logRequestStarted(this.request);
@@ -70,9 +77,7 @@ export class HttpRequestLifecycle {
       duration,
       {
         method: this.request.method,
-        route:
-          this.request.path ??
-          this.request.url,
+        route: routeFor(this.request),
         status: this.response.statusCode,
       },
     );
@@ -99,6 +104,15 @@ export class HttpRequestLifecycle {
     const duration =
       performance.now() - this.startTime;
 
+    this.metrics.requestCompleted(
+      duration,
+      {
+        method: this.request.method,
+        route: routeFor(this.request),
+        status: this.response.statusCode || 500,
+      },
+    );
+
     logRequestFailed(
       this.request,
       error,
@@ -110,6 +124,13 @@ export class HttpRequestLifecycle {
       this.span,
       error,
       this.response.statusCode || 500,
+    );
+  }
+
+  run<T>(callback: () => T): T {
+    return context.with(
+      trace.setSpan(context.active(), this.span),
+      callback,
     );
   }
 }

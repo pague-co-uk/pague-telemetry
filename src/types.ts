@@ -35,6 +35,14 @@ export interface CollectorConfig {
    * http://otel-collector:4318/v1/metrics
    */
   metricsEndpoint: string;
+
+  /**
+   * Full OTLP HTTP endpoint for logs.
+   *
+   * Example:
+   * http://otel-collector:4318/v1/logs
+   */
+  logsEndpoint: string;
 }
 
 export interface MetricsConfig {
@@ -70,6 +78,9 @@ export interface InstrumentationConfig {
 }
 
 export interface TelemetryConfig {
+  /** Enable SDK exporting while keeping logging and telemetry APIs safe to call. */
+  enabled?: boolean;
+
   service: ServiceConfig;
 
   collector: CollectorConfig;
@@ -79,4 +90,7 @@ export interface TelemetryConfig {
   logger?: LoggerConfig;
 
   instrumentations?: InstrumentationConfig;
+
+  /** Set false when the host application owns process signal handling. */
+  registerShutdownHooks?: boolean;
 }

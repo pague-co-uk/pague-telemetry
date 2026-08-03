@@ -30,6 +30,10 @@ export const redaction: NonNullable<LoggerOptions['redact']> = {
 
     '*.privateKey',
     '*.certificate',
+    '*.username',
+    '*.email',
+    '*.phone',
+    '*.ipAddress',
 
     'req.headers.authorization',
     'req.headers.cookie',

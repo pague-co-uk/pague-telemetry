@@ -37,6 +37,10 @@ function validateService(
 function validateCollector(
   config: TelemetryConfig,
 ): void {
+  if (config.enabled === false) {
+    return;
+  }
+
   validateUrl(
     config.collector.tracesEndpoint,
     'collector.tracesEndpoint',
@@ -45,6 +49,11 @@ function validateCollector(
   validateUrl(
     config.collector.metricsEndpoint,
     'collector.metricsEndpoint',
+  );
+
+  validateUrl(
+    config.collector.logsEndpoint,
+    'collector.logsEndpoint',
   );
 }
 

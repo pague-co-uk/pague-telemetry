@@ -1,8 +1,10 @@
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
-
+import type { NodeSDKConfiguration } from '@opentelemetry/sdk-node';
+import { NodeSDK } from '@opentelemetry/sdk-node';
 import type { TelemetryConfig } from '../types.js';
 
 import { getEnvironment } from '../common/env.js';
@@ -19,37 +21,13 @@ import { validateTelemetryConfig } from './validation.js';
 export function initTelemetry(config: TelemetryConfig): void {
   validateTelemetryConfig(config);
 
-  const sdk = new NodeSDK({
-    resource: createResource(config),
-
-    traceExporter: new OTLPTraceExporter({
-      url: config.collector.tracesEndpoint,
-    }),
-
-    metricReader: new PeriodicExportingMetricReader({
-      exporter: new OTLPMetricExporter({
-        url: config.collector.metricsEndpoint,
-      }),
-      exportIntervalMillis: config.metrics.exportIntervalMillis,
-    }),
-
-    instrumentations: [createInstrumentations(config)],
-  });
-
-  sdk.start();
-
   initLogger({
     serviceName: config.service.name,
     serviceVersion: config.service.version,
-
-    ...(config.logger?.level && {
-      level: config.logger.level,
-    }),
-
-    ...(config.logger?.transport && {
-      transport: config.logger.transport,
-    }),
+    ...(config.logger?.level && { level: config.logger.level }),
+    ...(config.logger?.transport && { transport: config.logger.transport }),
   });
+
   initTracer({
     serviceName: config.service.name,
     version: config.service.version,
@@ -66,9 +44,48 @@ export function initTelemetry(config: TelemetryConfig): void {
     environment: getEnvironment(),
   });
 
+  if (config.enabled === false) {
+    return;
+  }
+
+  const sdkConfig: Partial<NodeSDKConfiguration> = {
+    resource: createResource(config),
+
+    traceExporter: new OTLPTraceExporter({
+      url: config.collector.tracesEndpoint,
+    }),
+
+    metricReaders: [
+      new PeriodicExportingMetricReader({
+        exporter: new OTLPMetricExporter({
+          url: config.collector.metricsEndpoint,
+        }),
+        exportIntervalMillis: config.metrics.exportIntervalMillis,
+      }),
+    ],
+
+    instrumentations: [createInstrumentations(config)],
+  };
+
+  if (config.collector.logsEndpoint) {
+    sdkConfig.logRecordProcessors = [
+      new BatchLogRecordProcessor({
+        exporter: new OTLPLogExporter({
+          url: config.collector.logsEndpoint,
+        }),
+      }),
+    ];
+  }
+
+  const sdk = new NodeSDK(sdkConfig);
+
+  sdk.start();
+
   telemetryManager.initialize(sdk);
 
-  registerShutdownHooks();
+  if (config.registerShutdownHooks !== false) {
+    registerShutdownHooks();
+  }
 }
 
 export async function shutdownTelemetry(): Promise<void> {
