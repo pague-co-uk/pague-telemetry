@@ -1,4 +1,5 @@
 import { NodeSDK } from '@opentelemetry/sdk-node';
+
 import {
   TelemetryAlreadyInitializedError,
   TelemetryNotInitializedError,
@@ -8,8 +9,8 @@ export class TelemetryManager {
   private sdk: NodeSDK | null = null;
 
   /**
-   * Registers the running SDK instance.
-   * Can only be called once.
+   * Registers the SDK instance.
+   * Can only be called once until the SDK is shut down.
    */
   public initialize(sdk: NodeSDK): void {
     if (this.sdk) {
@@ -17,6 +18,33 @@ export class TelemetryManager {
     }
 
     this.sdk = sdk;
+  }
+
+  /**
+   * Starts the registered SDK.
+   *
+   * If startup fails, ownership of the SDK is released and
+   * shutdown is attempted to avoid leaving partially started
+   * telemetry resources running.
+   */
+  public start(): void {
+    const sdk = this.sdk;
+
+    if (!sdk) {
+      throw new TelemetryNotInitializedError();
+    }
+
+    try {
+      sdk.start();
+    } catch (error) {
+      this.sdk = null;
+
+      void sdk.shutdown().catch(() => {
+        // The original startup error is more useful to the caller.
+      });
+
+      throw error;
+    }
   }
 
   /**
@@ -39,13 +67,18 @@ export class TelemetryManager {
 
   /**
    * Shuts down the SDK and clears the singleton.
+   *
+   * The SDK reference is retained if shutdown fails so that the
+   * lifecycle remains recoverable and the failure is not hidden.
    */
   public async shutdown(): Promise<void> {
-    if (!this.sdk) {
+    const sdk = this.sdk;
+
+    if (!sdk) {
       return;
     }
 
-    await this.sdk.shutdown();
+    await sdk.shutdown();
     this.sdk = null;
   }
 }

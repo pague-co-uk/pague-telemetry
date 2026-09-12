@@ -29,3 +29,12 @@ export function getMeter(): Meter {
 
   return meter;
 }
+
+/**
+ * Clears the cached meter handle.
+ *
+ * Intended for telemetry lifecycle shutdown.
+ */
+export function resetMeter(): void {
+  meter = undefined;
+}

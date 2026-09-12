@@ -29,3 +29,12 @@ export function getTracer(): Tracer {
 
   return tracer;
 }
+
+/**
+ * Clears the cached tracer handle.
+ *
+ * Intended for telemetry lifecycle shutdown.
+ */
+export function resetTracer(): void {
+  tracer = undefined;
+}

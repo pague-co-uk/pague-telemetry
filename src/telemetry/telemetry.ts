@@ -5,12 +5,17 @@ import { BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import type { NodeSDKConfiguration } from '@opentelemetry/sdk-node';
 import { NodeSDK } from '@opentelemetry/sdk-node';
+
 import type { TelemetryConfig } from '../types.js';
 
 import { getEnvironment } from '../common/env.js';
-import { initLogger } from '../logger/index.js';
-import { initMeter, setCommonMetricAttributes } from '../metrics/index.js';
-import { initTracer } from '../tracing/index.js';
+import { initLogger, resetLogger } from '../logger/index.js';
+import {
+  initMeter,
+  resetMeter,
+  setCommonMetricAttributes,
+} from '../metrics/index.js';
+import { initTracer, resetTracer } from '../tracing/index.js';
 
 import { createInstrumentations } from './instrumentations.js';
 import { telemetryManager } from './manager.js';
@@ -18,8 +23,25 @@ import { createResource } from './resources.js';
 import { registerShutdownHooks } from './shutdown.js';
 import { validateTelemetryConfig } from './validation.js';
 
-export function initTelemetry(config: TelemetryConfig): void {
+export function initTelemetry(
+  config: TelemetryConfig,
+): void {
   validateTelemetryConfig(config);
+
+  initLogger({
+    serviceName: config.service.name,
+    serviceVersion: config.service.version,
+    ...(config.logger?.level && {
+      level: config.logger.level,
+    }),
+    ...(config.logger?.transport && {
+      transport: config.logger.transport,
+    }),
+  });
+
+  if (config.enabled === false) {
+    return;
+  }
 
   initTracer({
     serviceName: config.service.name,
@@ -37,17 +59,6 @@ export function initTelemetry(config: TelemetryConfig): void {
     environment: getEnvironment(),
   });
 
-  if (config.enabled === false) {
-    initLogger({
-      serviceName: config.service.name,
-      serviceVersion: config.service.version,
-      ...(config.logger?.level && { level: config.logger.level }),
-      ...(config.logger?.transport && { transport: config.logger.transport }),
-    });
-
-    return;
-  }
-
   const sdkConfig: Partial<NodeSDKConfiguration> = {
     resource: createResource(config),
 
@@ -60,11 +71,14 @@ export function initTelemetry(config: TelemetryConfig): void {
         exporter: new OTLPMetricExporter({
           url: config.collector.metricsEndpoint,
         }),
-        exportIntervalMillis: config.metrics.exportIntervalMillis,
+        exportIntervalMillis:
+          config.metrics.exportIntervalMillis,
       }),
     ],
 
-    instrumentations: [createInstrumentations(config)],
+    instrumentations: [
+      createInstrumentations(config),
+    ],
   };
 
   if (config.collector.logsEndpoint) {
@@ -79,16 +93,21 @@ export function initTelemetry(config: TelemetryConfig): void {
 
   const sdk = new NodeSDK(sdkConfig);
 
-  sdk.start();
+  try {
+    telemetryManager.initialize(sdk);
+    telemetryManager.start();
+  } catch (error) {
+    resetMeter();
+    resetTracer();
 
-  initLogger({
-    serviceName: config.service.name,
-    serviceVersion: config.service.version,
-    ...(config.logger?.level && { level: config.logger.level }),
-    ...(config.logger?.transport && { transport: config.logger.transport }),
-  });
+    if (!telemetryManager.isInitialized()) {
+      void sdk.shutdown().catch(() => {
+        // Preserve the original initialization/startup error.
+      });
+    }
 
-  telemetryManager.initialize(sdk);
+    throw error;
+  }
 
   if (config.registerShutdownHooks !== false) {
     registerShutdownHooks();
@@ -96,5 +115,11 @@ export function initTelemetry(config: TelemetryConfig): void {
 }
 
 export async function shutdownTelemetry(): Promise<void> {
-  await telemetryManager.shutdown();
+  try {
+    await telemetryManager.shutdown();
+  } finally {
+    resetMeter();
+    resetTracer();
+    resetLogger();
+  }
 }

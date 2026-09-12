@@ -1,5 +1,5 @@
+import type { Logger, LoggerOptions } from 'pino';
 import pino, { multistream } from 'pino';
-import type {Logger, LoggerOptions} from 'pino';
 
 import { DEFAULT_LOG_LEVEL, LOG_FIELDS } from '../common/constants.js';
 import { getLogLevel } from '../common/env.js';
@@ -8,10 +8,10 @@ import { NotInitializedError } from '../common/errors.js';
 import { getTraceContext } from './context.js';
 import { redaction } from './redaction.js';
 import { serializers } from './serializers.js';
+import type { TransportConfig } from './transports.js';
 import {
   createTransports,
 } from './transports.js';
-import type {TransportConfig} from './transports.js';
 
 export interface InternalLoggerConfig {
   serviceName: string;
@@ -36,8 +36,7 @@ export function initLogger(
       [LOG_FIELDS.SERVICE]: config.serviceName,
 
       ...(config.serviceVersion && {
-        [LOG_FIELDS.VERSION]:
-          config.serviceVersion,
+        [LOG_FIELDS.VERSION]: config.serviceVersion,
       }),
     },
 
@@ -68,4 +67,13 @@ export function getLogger(): Logger {
   }
 
   return logger;
+}
+
+/**
+ * Clears the cached logger instance.
+ *
+ * Intended for telemetry lifecycle shutdown.
+ */
+export function resetLogger(): void {
+  logger = undefined;
 }
