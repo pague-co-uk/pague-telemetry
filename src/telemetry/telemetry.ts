@@ -28,18 +28,18 @@ export function initTelemetry(
 ): void {
   validateTelemetryConfig(config);
 
-  initLogger({
-    serviceName: config.service.name,
-    serviceVersion: config.service.version,
-    ...(config.logger?.level && {
-      level: config.logger.level,
-    }),
-    ...(config.logger?.transport && {
-      transport: config.logger.transport,
-    }),
-  });
-
   if (config.enabled === false) {
+    initLogger({
+      serviceName: config.service.name,
+      serviceVersion: config.service.version,
+      ...(config.logger?.level && {
+        level: config.logger.level,
+      }),
+      ...(config.logger?.transport && {
+        transport: config.logger.transport,
+      }),
+    });
+
     return;
   }
 
@@ -96,9 +96,26 @@ export function initTelemetry(
   try {
     telemetryManager.initialize(sdk);
     telemetryManager.start();
+
+    /*
+     * Pino must be initialized after the OpenTelemetry SDK starts so that
+     * the Pino instrumentation can attach to the logger and bridge Pino
+     * records into the OpenTelemetry Logs API.
+     */
+    initLogger({
+      serviceName: config.service.name,
+      serviceVersion: config.service.version,
+      ...(config.logger?.level && {
+        level: config.logger.level,
+      }),
+      ...(config.logger?.transport && {
+        transport: config.logger.transport,
+      }),
+    });
   } catch (error) {
     resetMeter();
     resetTracer();
+    resetLogger();
 
     if (!telemetryManager.isInitialized()) {
       void sdk.shutdown().catch(() => {
