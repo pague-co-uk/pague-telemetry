@@ -7,5 +7,9 @@ export function createInstrumentations(config: TelemetryConfig) {
     '@opentelemetry/instrumentation-fs': {
       enabled: !config.instrumentations?.disableFs,
     },
+
+    '@opentelemetry/instrumentation-pino': {
+      enabled: true,
+    },
   });
 }
